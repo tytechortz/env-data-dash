@@ -327,7 +327,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     combo_data = pd.read_json(combo_data)
     
     combo_current_volume = combo_data['Water Level'][-1]
-    combo_current_volume_date = combo_data.index[-1]
+    combo_current_volume_date = combo_data.index[-1].strftime('%Y-%m-%d')
     combo_pct = combo_current_volume / capacities['Powell Mead Combo']
     combo_last_v = combo_data['Water Level'][-2]
     combo_tfh_change = combo_current_volume - combo_data['Water Level'][-2]
@@ -491,6 +491,13 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             ],
                 className='two columns'
             ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.Div([
+                html.H6('Data Updated on {}'.format(combo_current_volume_date), style={'text-align': 'center'})
+            ])
         ],
             className='row'
         ),
