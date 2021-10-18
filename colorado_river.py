@@ -17,12 +17,7 @@ import csv
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
-today = time.strftime("%Y-%m-%d")
-today2 = datetime.now()
-year = datetime.now().year
-f_date = datetime(year, 1, 1)
-delta = today2 - f_date
-days = delta.days
+
 
 
 capacities = {'Lake Powell Glen Canyon Dam and Powerplant': 24322000, 'Lake Mead Hoover Dam and Powerplant': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800, 'Powell Mead Combo': 50456000, 'UR': 6438100}
@@ -147,49 +142,54 @@ def river_App():
             className='row'
         ),
         html.Div([
-        html.Div([
-            html.H6('Current Storage - AF', style={'text-align': 'center'})
+            html.Div([
+                html.H6('Current Storage - AF', style={'text-align': 'center'})
+            ],
+                className='three columns'
+            ),
+            html.Div([
+                html.H6('Pct. Full', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('24 hr', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('C.Y.', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Year', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Rec Low', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Diff', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Rec Low Date', style={'text-align': 'center'})
+            ],
+                className='two columns'
+            ),
         ],
-            className='three columns'
+            className='row'
         ),
         html.Div([
-            html.H6('Pct. Full', style={'text-align': 'center'})
+            html.Div(id='cur-levels')
         ],
-            className='one column'
+            className='row'
         ),
-        html.Div([
-            html.H6('24 hr', style={'text-align': 'center'})
-        ],
-            className='one column'
-        ),
-        html.Div([
-            html.H6('C.Y.', style={'text-align': 'center'})
-        ],
-            className='one column'
-        ),
-        html.Div([
-            html.H6('Year', style={'text-align': 'center'})
-        ],
-            className='one column'
-        ),
-        html.Div([
-            html.H6('Rec Low', style={'text-align': 'center'})
-        ],
-            className='one column'
-        ),
-        html.Div([
-            html.H6('Diff', style={'text-align': 'center'})
-        ],
-            className='one column'
-        ),
-        html.Div([
-            html.H6('Rec Low Date', style={'text-align': 'center'})
-        ],
-            className='two columns'
-        ),
-    ],
-        className='row'
-    ),
         dcc.Interval(
         id='interval-component',
         interval=500*1000, # in milliseconds
@@ -200,6 +200,9 @@ def river_App():
         dcc.Store(id='mead-water-data'),
         dcc.Store(id='mead-water-data-raw'),
         dcc.Store(id='combo-water-data'),
+        dcc.Store(id='powell-annual-change'),
+        dcc.Store(id='mead-annual-change'),
+        dcc.Store(id='combo-annual-change'),
     ])
 
 
