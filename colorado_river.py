@@ -1,17 +1,36 @@
 import dash
 from dash import html
 from dash import dcc
+from dash.dependencies import Input, Output, State
+import plotly.graph_objs as go
 import pandas as pd
 import time
 import json
 import requests
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
+import flask
+from datetime import datetime as dt
+import csv
+# import callbacks
 
 
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
+today = time.strftime("%Y-%m-%d")
+today2 = datetime.now()
+year = datetime.now().year
+f_date = datetime(year, 1, 1)
+delta = today2 - f_date
+days = delta.days
+
+
 capacities = {'Lake Powell Glen Canyon Dam and Powerplant': 24322000, 'Lake Mead Hoover Dam and Powerplant': 26134000, 'FLAMING GORGE RESERVOIR': 3788700, 'NAVAJO RESERVOIR': 1708600, 'BLUE MESA RESERVOIR': 940800, 'Powell Mead Combo': 50456000, 'UR': 6438100}
+
+
+# powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-29&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
+
+# mead_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1999-12-30&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
 
 def get_river_header():
 
@@ -131,6 +150,18 @@ def river_App():
         ],
             className='row'
         ),
+        dcc.Interval(
+        id='interval-component',
+        interval=500*1000, # in milliseconds
+        n_intervals=0
+        ),
+        dcc.Store(id='powell-water-data'),
+        dcc.Store(id='powell-water-data-raw'),
+        dcc.Store(id='mead-water-data'),
+        dcc.Store(id='mead-water-data-raw'),
+        dcc.Store(id='combo-water-data'),
     ])
+
+
 
 app.layout = river_App
