@@ -34,22 +34,53 @@ def get_river_header():
 
 def get_nav_bar():
     navbar = html.Div([
-        html.Div([], className='col-2'),
         html.Div([
-            dcc.Link(
-                html.H6(children='Home'),
-                href='/homepage'
-            )
+            html.Div([], className='col-2'),
+            html.Div([
+                dcc.Link(
+                    html.H6(children='Home'),
+                    href='/homepage'
+                )
+            ],
+                className='col-2',
+                style={'text-align': 'center'}
+            ),
+            html.Div([], className = 'col-2')
         ],
-            className='col-2',
-            style={'text-align': 'center'}
+            className = 'row',
+            style = {'background-color' : 'dark-green',
+                    'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
         ),
-        html.Div([], className = 'col-2')
-    ],
-    className = 'row',
-    style = {'background-color' : 'dark-green',
-            'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
-    )
+        html.Div([
+            html.Div([
+                html.Div([
+                    dcc.Link(
+                        html.H6(children='Upper Reservoirs'),
+                        href='/ur'
+                    )
+                ],
+                    className='six columns',
+                    style={'text-align': 'center'}
+                ),
+                html.Div([
+                    dcc.Link(
+                        html.H6(children='Drought'),
+                        href='/drought'
+                    )
+                ],
+                    className='six columns',
+                    style={'text-align': 'center'}
+                ),
+            ],
+                className='twelve columns'
+            ),
+        ],
+            className = 'row',
+                style = {'background-color' : 'dark-green',
+                        'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
+        ),
+
+    ])
 
     return navbar
     
@@ -57,7 +88,35 @@ def get_nav_bar():
 def river_App():
     return html.Div([
         get_river_header(),
-        get_nav_bar()
+        get_nav_bar(),
+        html.Div([
+        html.Div([
+            dcc.Loading(
+            id="loading-powell",
+            type="default",
+            children=html.Div(dcc.Graph(id='powell-levels'))),
+        ],
+            className='four columns'
+        ),
+        html.Div([
+            dcc.Loading(
+            id="loading-mead",
+            type="default",
+            children=html.Div(dcc.Graph(id='mead-levels'))),
+        ],
+            className='four columns'
+        ),
+        html.Div([
+            dcc.Loading(
+            id="loading-combo",
+            type="default",
+            children=html.Div(dcc.Graph(id='combo-levels'))),
+        ],
+            className='four columns'
+        ),
+    ],
+        className='row'
+    ),
     ])
 
 app.layout = river_App
