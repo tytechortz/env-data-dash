@@ -39,7 +39,54 @@ def display_page(pathname):
         return Homepage()
 
 
-
+def get_navbar(p = 'homepage'):
+    navbar_homepage = html.Div([
+        html.Div([], className='col-2'),
+        html.Div([
+            dcc.Link(
+                html.H6(children='Upper Reservoirs'),
+                href='/ur'
+            )
+        ],
+            className='col-2',
+            style={'text-align': 'center'}
+        ),
+        html.Div([
+            dcc.Link(
+                html.H6(children='Drought'),
+                href='/drought'
+            )
+        ],
+            className='col-2',
+            style={'text-align': 'center'}
+        ),
+        html.Div([], className = 'col-2'),
+    ],
+    className = 'row',
+    style = {'background-color' : 'dark-green',
+            'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
+    )
+    non_home = html.Div([
+        html.Div([], className='col-2'),
+        html.Div([
+            dcc.Link(
+                html.H6(children='Home'),
+                href='/homepage'
+            )
+        ],
+            className='col-2',
+            style={'text-align': 'center'}
+        ),
+        html.Div([], className = 'col-2')
+    ],
+    className = 'row',
+    style = {'background-color' : 'dark-green',
+            'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
+    )
+    if p == 'homepage':
+        return navbar_homepage
+    else:
+        return non_home
 
 
 

@@ -7,6 +7,7 @@ import json
 import requests
 from datetime import datetime, date
 
+
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
@@ -31,5 +32,32 @@ def get_river_header():
 
     return header
 
+def get_nav_bar():
+    navbar = html.Div([
+        html.Div([], className='col-2'),
+        html.Div([
+            dcc.Link(
+                html.H6(children='Home'),
+                href='/homepage'
+            )
+        ],
+            className='col-2',
+            style={'text-align': 'center'}
+        ),
+        html.Div([], className = 'col-2')
+    ],
+    className = 'row',
+    style = {'background-color' : 'dark-green',
+            'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
+    )
+
+    return navbar
+    
+
 def river_App():
-    return get_river_header()
+    return html.Div([
+        get_river_header(),
+        get_nav_bar()
+    ])
+
+app.layout = river_App
