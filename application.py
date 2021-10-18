@@ -1,10 +1,11 @@
 
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output, State
 from homepage import Homepage
 import time
+from colorado_river import river_App
 
 today = time.strftime("%Y-%m-%d")
 print(today)
@@ -37,5 +38,10 @@ def display_page(pathname):
     else:
         return Homepage()
 
+
+
+
+
+
 if __name__ == '__main__':
-    application.run(debug=False, port=8050)
+    application.run(debug=True, port=8050)

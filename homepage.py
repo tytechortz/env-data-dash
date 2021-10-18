@@ -1,7 +1,7 @@
 import dash
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 # from co_2 import max_co2, max_co2_date, current_co2, current_co2_date
 
 body = dbc.Container([
