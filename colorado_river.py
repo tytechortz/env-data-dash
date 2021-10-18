@@ -32,6 +32,19 @@ def get_river_header():
 
     return header
 
+def get_emptyrow(h='15px'):
+    """This returns an empty row of a defined height"""
+
+    emptyrow = html.Div([
+        html.Div([
+            html.Br()
+        ], className = 'col-12')
+    ],
+    className = 'row',
+    style = {'height' : h})
+
+    return emptyrow
+
 def get_nav_bar():
     navbar = html.Div([
         html.Div([
@@ -89,34 +102,35 @@ def river_App():
     return html.Div([
         get_river_header(),
         get_nav_bar(),
+        get_emptyrow(),
         html.Div([
-        html.Div([
-            dcc.Loading(
-            id="loading-powell",
-            type="default",
-            children=html.Div(dcc.Graph(id='powell-levels'))),
+            html.Div([
+                dcc.Loading(
+                id="loading-powell",
+                type="default",
+                children=html.Div(dcc.Graph(id='powell-levels'))),
+            ],
+                className='four columns'
+            ),
+            html.Div([
+                dcc.Loading(
+                id="loading-mead",
+                type="default",
+                children=html.Div(dcc.Graph(id='mead-levels'))),
+            ],
+                className='four columns'
+            ),
+            html.Div([
+                dcc.Loading(
+                id="loading-combo",
+                type="default",
+                children=html.Div(dcc.Graph(id='combo-levels'))),
+            ],
+                className='four columns'
+            ),
         ],
-            className='four columns'
+            className='row'
         ),
-        html.Div([
-            dcc.Loading(
-            id="loading-mead",
-            type="default",
-            children=html.Div(dcc.Graph(id='mead-levels'))),
-        ],
-            className='four columns'
-        ),
-        html.Div([
-            dcc.Loading(
-            id="loading-combo",
-            type="default",
-            children=html.Div(dcc.Graph(id='combo-levels'))),
-        ],
-            className='four columns'
-        ),
-    ],
-        className='row'
-    ),
     ])
 
 app.layout = river_App
