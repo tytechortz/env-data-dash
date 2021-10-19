@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output, State
 from homepage import Homepage
 import time
 from colorado_river import river_App, capacities
+from upper_res import ur_App
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
@@ -50,6 +51,8 @@ def display_page(pathname):
         return ice_App()
     elif pathname == '/colorado-river':
         return river_App()
+    elif pathname == '/ur':
+        return ur_App()
     elif pathname == '/co2':
         return co2_App()
     else:
