@@ -142,10 +142,11 @@ def river_App():
             className='row'
         ),
         html.Div([
+            html.Div([], className='one column'),
             html.Div([
                 html.H6('Current Storage - AF', style={'text-align': 'center'})
             ],
-                className='three columns'
+                className='two columns'
             ),
             html.Div([
                 html.H6('Pct. Full', style={'text-align': 'center'})

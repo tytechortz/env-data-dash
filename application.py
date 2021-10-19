@@ -349,6 +349,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
 
     return html.Div([
         html.Div([
+            html.Div([],className='one column'),
             html.Div([
                 html.H6('Powell', style={'text-align': 'left'})
             ],
@@ -357,7 +358,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             html.Div([
                 html.H6('{:,.0f}'.format(powell_current_volume), style={'text-align': 'right'})
             ],
-                className='two columns'
+                className='one column'
             ),
             html.Div([
                 html.H6('{0:.1%}'.format(powell_pct), style={'text-align': 'center'})
@@ -398,6 +399,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             className='row'
         ),
         html.Div([
+            html.Div([],className='one column'),
             html.Div([
                 html.H6('Mead', style={'text-align': 'left'})
             ],
@@ -406,7 +408,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             html.Div([
                 html.H6('{:,.0f}'.format(mead_current_volume), style={'text-align': 'right'})
             ],
-                className='two columns'
+                className='one column'
             ),
             html.Div([
                 html.H6('{0:.1%}'.format(mead_pct), style={'text-align': 'center'})
@@ -447,6 +449,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             className='row'
         ),
         html.Div([
+            html.Div([],className='one column'),
             html.Div([
                 html.H6('Combined', style={'text-align': 'left'})
             ],
@@ -455,7 +458,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             html.Div([
                 html.H6('{:,.0f}'.format(combo_current_volume), style={'text-align': 'right'})
             ],
-                className='two columns'
+                className='one column'
             ),
             html.Div([
                 html.H6('{0:.1%}'.format(combo_pct), style={'text-align': 'center'})
