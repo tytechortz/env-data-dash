@@ -8,6 +8,7 @@ from homepage import Homepage
 import time
 from colorado_river import river_App, capacities
 from upper_res import ur_App
+from drought_river import drought_river_App
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
@@ -64,6 +65,8 @@ def display_page(pathname):
         return river_App()
     elif pathname == '/ur':
         return ur_App()
+    elif pathname == '/drought-river':
+        return drought_river_App()
     elif pathname == '/co2':
         return co2_App()
     else:

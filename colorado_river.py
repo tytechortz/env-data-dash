@@ -88,7 +88,7 @@ def get_nav_bar():
                 html.Div([
                     dcc.Link(
                         html.H6(children='Drought'),
-                        href='/drought'
+                        href='/drought-river'
                     )
                 ],
                     className='six columns',
