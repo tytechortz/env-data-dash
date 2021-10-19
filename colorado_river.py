@@ -190,6 +190,32 @@ def river_App():
         ],
             className='row'
         ),
+        html.Div([
+            html.Div([
+                dcc.Graph(
+                    id='powell-annual-changes'
+                )
+            ],
+                className='four columns'
+            ),
+            html.Div([
+                dcc.Graph(
+                    id='mead-annual-changes'
+                )
+            ],
+                className='four columns'
+            ),
+            html.Div([
+                dcc.Graph(
+                    id='combo-annual-changes'
+                )
+            ],
+                className='four columns'
+            ),
+            
+        ],
+            className='row'
+        ),
         dcc.Interval(
         id='interval-component',
         interval=500*1000, # in milliseconds
