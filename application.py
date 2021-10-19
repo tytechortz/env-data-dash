@@ -764,6 +764,7 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
 
     return html.Div([
         html.Div([
+            html.Div([],className='one column'),
             html.Div([
                 html.H6('Blue Mesa', style={'text-align': 'left'})
             ],
@@ -813,6 +814,7 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
             className = 'row'
         ),
         html.Div([
+            html.Div([],className='one column'),
             html.Div([
                 html.H6('Navajo', style={'text-align': 'left'})
             ],
@@ -862,6 +864,7 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
             className = 'row'
         ),
         html.Div([
+            html.Div([],className='one column'),
             html.Div([
                 html.H6('Flaming Gorge', style={'text-align': 'left'})
             ],
@@ -911,6 +914,7 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
             className = 'row'
         ),
         html.Div([
+            html.Div([],className='one column'),
             html.Div([
                 html.H6('Combined', style={'text-align': 'left'})
             ],

@@ -94,6 +94,56 @@ def ur_App():
         ],
             className='row'
         ),
+        html.Div([
+            html.Div([],className='one column'),
+            html.Div([
+                html.H6('Current Storage - AF', style={'text-align': 'center'})
+            ],
+                className='three columns'
+            ),
+            html.Div([
+                html.H6('Pct. Full', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('24 hr', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('C.Y.', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Year', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Rec Low', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Diff', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('Rec Low Date', style={'text-align': 'center'})
+            ],
+                className='two columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.Div(id='upper-cur-levels')
+        ],
+            className='row'
+        ),
         dcc.Interval(
         id='interval-component',
         interval=500*1000, # in milliseconds
