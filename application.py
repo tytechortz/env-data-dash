@@ -753,6 +753,7 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
     ur_data['Storage'] = ur_data['Value_x'] + ur_data['Value_y'] + ur_data['Value']
     # print(ur_data)
     ur_current_volume = ur_data['Storage'].iloc[-1]
+    ur_current_volume_date = ur_data.index[-1].strftime('%Y-%m-%d')
     ur_pct = ur_current_volume / capacities['UR']
     ur_tfh_change = ur_current_volume - ur_data['Storage'][-2]
     ur_cy = ur_current_volume - ur_data['Storage'][-days]
@@ -962,6 +963,13 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
             ),
         ],
             className = 'row'
+        ),
+        html.Div([
+            html.Div([
+                html.H6('Data Updated on {}'.format(ur_current_volume_date), style={'text-align': 'center'})
+            ])
+        ],
+            className='row'
         ),
     ])
 
