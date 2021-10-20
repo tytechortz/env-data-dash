@@ -976,6 +976,27 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
         ),
     ])
 
+@app.callback(
+    Output('drought-stats', 'children'),
+    [Input('combo-water-data', 'data'),
+    Input('MA-input', 'value'),
+    Input('drought-data', 'data'),
+    Input('drought-year', 'value')])
+def drought_stats(combo_data, value, drought_data, years):
+    df = pd.read_json(drought_data)
+    current_dsci = df['DSCI'].iloc[1]
+    prev_dsci = df['DSCI'].iloc[value]
+
+    year1 = years[0]
+    year2 = years[1]
+    print(df)
+
+    return html.Div([
+        html.H6('Current DSCI = {}'.format(current_dsci)),
+        html.H6('DSCI from {} weeks ago = {}'.format(value, prev_dsci)),
+
+    ])
+
 
 
 if __name__ == '__main__':
