@@ -13,6 +13,8 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 from datetime import datetime, date, timedelta
+import requests
+import io
 
 
 today = time.strftime("%Y-%m-%d")
@@ -29,7 +31,9 @@ app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div([
     dcc.Location(id = 'url', refresh = False),
-    html.Div(id = 'page-content')
+    html.Div(id = 'page-content'),
+    dcc.Store(id='combo-annual-change', storage_type='session'),
+    dcc.Store(id='combo-water-data', storage_type='session'),
 ])
 
 powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-29&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
@@ -605,7 +609,7 @@ def clean_powell_data(n):
     bm_df = blue_mesa_data_raw
     nav_df = navajo_data_raw
     fg_df = fg_data_raw
-    print(bm_df)
+    # print(bm_df)
 
     df_bm_water = bm_df.drop(bm_df.columns[[1,3,4,5,7,8]], axis=1)
     # print(df_nav_water)
@@ -989,7 +993,7 @@ def drought_stats(combo_data, value, drought_data, years):
 
     year1 = years[0]
     year2 = years[1]
-    print(df)
+    # print(df)
 
     return html.Div([
         html.H6('Current DSCI = {}'.format(current_dsci)),
@@ -1003,17 +1007,16 @@ def drought_stats(combo_data, value, drought_data, years):
     Output('diff-graph', 'figure'),],
     [Input('combo-water-data', 'data'),
     Input('drought-data', 'data')])
-def drought_graphs(combo_data, drought_data, ma_value):
-    print(years)
+def drought_graphs(combo_data, drought_data):
     df = pd.read_json(drought_data)
     # df_last = pd.read_json(last)
     # print(df_last)
-    year1 = str(years[0])
-    year2 = str(years[1])
+    # year1 = str(years[0])
+    # year2 = str(years[1])
 
-    df['MA'] = df['DSCI'].rolling(window=ma_value).mean()
+    # df['MA'] = df['DSCI'].rolling(window=ma_value).mean()
     
-    # print(df)
+    print(df)
     # df = df.loc[year1:year2]
     # print(df)
 
@@ -1036,13 +1039,13 @@ def drought_graphs(combo_data, drought_data, ma_value):
     # df_combo_last['diff'] = df_combo_last[]
 
 
-    drought_traces.append(go.Scatter(
-        name='DSCI Moving Average',
-        y=df['MA'],
-        x=df.index,
-        marker_color = 'red',
-        yaxis='y'
-    )),
+    # drought_traces.append(go.Scatter(
+    #     name='DSCI Moving Average',
+    #     y=df['MA'],
+    #     x=df.index,
+    #     marker_color = 'red',
+    #     yaxis='y'
+    # )),
     drought_traces.append(go.Bar(
         name='Volume',
         y=df_combo['Water Level'],
@@ -1110,6 +1113,9 @@ def drought_graphs(combo_data, drought_data, ma_value):
     Input('interval-component', 'n_intervals'))
 def data(n):
     url = 'https://usdmdataservices.unl.edu/api/StateStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=08&startdate=1/1/2000&enddate=' + today + '&statisticsType=2'
+
+
+    # https://usdmdataservices.unl.edu/api/StateStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=08&startdate=1/1/2000&enddate=10/20/2021&statisticsType=2
 
     # combo_data = pd.read_json(com)
     # print(combo_data)

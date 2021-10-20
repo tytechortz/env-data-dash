@@ -2,6 +2,7 @@ import dash
 from dash import html
 from dash import dcc
 from colorado_river import get_river_header, get_emptyrow
+import requests
 
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
@@ -155,9 +156,14 @@ def drought_river_App():
         ],  
             className='row'
         ),
+        dcc.Interval(
+            id='interval-component',
+            interval=500*1000, # in milliseconds
+            n_intervals=0
+        ),
         dcc.Store(id='drought-data'),
-        dcc.Store(id='combo-water-data'),
-        dcc.Store(id='combo-annual-change'),
+        # dcc.Store(id='combo-water-data'),
+        # dcc.Store(id='combo-annual-change'),
     ])
 
 

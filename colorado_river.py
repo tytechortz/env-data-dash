@@ -14,6 +14,7 @@ import csv
 
 
 
+
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
@@ -226,10 +227,10 @@ def river_App():
         dcc.Store(id='powell-water-data-raw'),
         dcc.Store(id='mead-water-data'),
         dcc.Store(id='mead-water-data-raw'),
-        dcc.Store(id='combo-water-data'),
+        # dcc.Store(id='combo-water-data'),
         dcc.Store(id='powell-annual-change'),
         dcc.Store(id='mead-annual-change'),
-        dcc.Store(id='combo-annual-change'),
+        # dcc.Store(id='combo-annual-change'),
     ])
 
 
