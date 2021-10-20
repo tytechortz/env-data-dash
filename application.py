@@ -1016,7 +1016,7 @@ def drought_graphs(combo_data, drought_data):
 
     # df['MA'] = df['DSCI'].rolling(window=ma_value).mean()
     
-    print(df)
+    # print(df)
     # df = df.loc[year1:year2]
     # print(df)
 
@@ -1039,13 +1039,13 @@ def drought_graphs(combo_data, drought_data):
     # df_combo_last['diff'] = df_combo_last[]
 
 
-    # drought_traces.append(go.Scatter(
-    #     name='DSCI Moving Average',
-    #     y=df['MA'],
-    #     x=df.index,
-    #     marker_color = 'red',
-    #     yaxis='y'
-    # )),
+    drought_traces.append(go.Scatter(
+        name='DSCI Moving Average',
+        y=df['DSCI'],
+        x=df.index,
+        marker_color = 'red',
+        yaxis='y'
+    )),
     drought_traces.append(go.Bar(
         name='Volume',
         y=df_combo['Water Level'],
@@ -1122,7 +1122,7 @@ def data(n):
     r = requests.get(url).content
 
     df = pd.read_json(io.StringIO(r.decode('utf-8')))
-    # print(df)
+    print(df)
 
     df['date'] = pd.to_datetime(df['MapDate'].astype(str), format='%Y%m%d')
 
