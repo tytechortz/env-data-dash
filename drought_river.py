@@ -63,7 +63,58 @@ def drought_river_App():
         get_river_header(),
         get_nav_bar(),
         get_emptyrow(),
-        
+        html.Div([
+            html.H3('Colorado Drought and the Colorado River', style={'text-align': 'center'})
+        ],
+            className='row'
+        ),
+        html.Div([
+        html.Div([
+            html.Div([
+                dcc.Graph(
+                    id='drought-graph'
+                )
+            ],
+                className='eight columns'
+            ),
+            html.Div([
+                html.Div([
+                    html.Div([
+                        dcc.Markdown('''Moving Avg in Weeks'''),
+                    ],
+                        className='two columns'
+                    ),
+                    html.Div([
+                        dcc.Input(
+                            id='MA-input',
+                            type='number',
+                            step=5,
+                            value=1
+                        ),
+                    ],
+                        className='two columns'
+                    ),
+                ],
+                    className='row'
+                ),
+                html.Div([
+                    html.Div([
+                        html.Div(id='drought-stats'),
+                    ],
+                        className='twelve columns'
+                    ),
+                ],
+                    className='row'
+                ),
+            ],
+                className='four columns'
+            ),
+        ],
+            className='twelve columns'
+        ),
+    ],      
+        className='row'
+    ),
     ])
 
 

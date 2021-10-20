@@ -88,7 +88,7 @@ def get_navbar(p = 'homepage'):
         html.Div([
             dcc.Link(
                 html.H6(children='Drought'),
-                href='/drought'
+                href='/drought-river'
             )
         ],
             className='col-2',
