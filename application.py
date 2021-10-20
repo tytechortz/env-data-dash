@@ -988,12 +988,12 @@ def get_current_volumes_upper(bm_data, nav_data, fg_data, ur_data):
     Input('drought-year', 'value')])
 def drought_stats(combo_data, value, drought_data, years):
     df = pd.read_json(drought_data)
-    current_dsci = df['DSCI'].iloc[1]
+    current_dsci = df['DSCI'].iloc[0]
     prev_dsci = df['DSCI'].iloc[value]
 
     year1 = years[0]
     year2 = years[1]
-    # print(df)
+    print(df)
 
     return html.Div([
         html.H6('Current DSCI = {}'.format(current_dsci)),
@@ -1122,7 +1122,7 @@ def data(n):
     r = requests.get(url).content
 
     df = pd.read_json(io.StringIO(r.decode('utf-8')))
-    print(df)
+    # print(df)
 
     df['date'] = pd.to_datetime(df['MapDate'].astype(str), format='%Y%m%d')
 
