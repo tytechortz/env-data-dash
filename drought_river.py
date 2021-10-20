@@ -132,6 +132,18 @@ def drought_river_App():
         ],
             className='row'
         ),
+        get_emptyrow(),
+        html.Div([
+            html.Div([
+                dcc.Graph(
+                    id='dsci-graph'
+                )
+            ],
+                className='eight columns'
+            ), 
+        ],  
+            className='row'
+        ),
         dcc.Store(id='drought-data'),
         dcc.Store(id='combo-water-data'),
         dcc.Store(id='combo-annual-change'),
