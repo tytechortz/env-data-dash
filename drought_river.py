@@ -89,7 +89,7 @@ def drought_river_App():
                             dcc.Input(
                                 id='MA-input',
                                 type='number',
-                                step=5,
+                                step=1,
                                 value=1
                             ),
                         ],
