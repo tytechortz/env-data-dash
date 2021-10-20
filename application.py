@@ -997,6 +997,136 @@ def drought_stats(combo_data, value, drought_data, years):
 
     ])
 
+@app.callback([
+    Output('drought-graph', 'figure'),
+    Output('dsci-graph', 'figure'),
+    Output('diff-graph', 'figure'),],
+    [Input('combo-water-data', 'data'),
+    Input('drought-data', 'data')])
+def drought_graphs(combo_data, drought_data, ma_value):
+    print(years)
+    df = pd.read_json(drought_data)
+    # df_last = pd.read_json(last)
+    # print(df_last)
+    year1 = str(years[0])
+    year2 = str(years[1])
+
+    df['MA'] = df['DSCI'].rolling(window=ma_value).mean()
+    
+    # print(df)
+    # df = df.loc[year1:year2]
+    # print(df)
+
+    drought_traces = []
+    dsci_traces = []
+    diff_traces = []
+
+    df_combo = pd.read_json(combo_data)
+    df_combo['color'] = np.where(df_combo.index.year % 2 == 1, 'lightblue', 'aqua')
+    df_combo_last = df_combo.groupby(df_combo.index.strftime('%Y')).tail(1)
+    df_combo_last['diff'] = df_combo_last['Water Level'].diff()
+    df_combo_last['diff'] = df_combo_last['diff'].apply(lambda x: x*-1)
+
+    # print(df_combo_last)
+    #adi = annual dsci average
+
+    df_ada = df[['DSCI']]
+    df_ada = df_ada.groupby(df_ada.index.strftime('%Y'))['DSCI'].mean()
+    # print(df_ada)
+    # df_combo_last['diff'] = df_combo_last[]
+
+
+    drought_traces.append(go.Scatter(
+        name='DSCI Moving Average',
+        y=df['MA'],
+        x=df.index,
+        marker_color = 'red',
+        yaxis='y'
+    )),
+    drought_traces.append(go.Bar(
+        name='Volume',
+        y=df_combo['Water Level'],
+        x=df_combo.index,
+        yaxis='y2',
+        marker_color=df_combo['color']
+    )),
+
+    drought_layout = go.Layout(
+        height=500,
+        title='DSCI and Total Storage',
+        yaxis={'title':'DSCI', 'overlaying': 'y2'},
+        yaxis2={'title': 'MAF', 'side': 'right'},
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+    )
+
+    dsci_traces.append(go.Scatter(
+        name='Negative Vol.Change',
+        y=df_combo_last['diff'],
+        x=df_combo_last.index,
+        mode='markers',
+        marker_size=10,
+        yaxis='y',
+        marker_color='red',
+        # opacity=0.5,
+        # width=2
+    )),
+
+    dsci_traces.append(go.Bar(
+        name='DSCI Annual Mean',
+        y=df_ada,
+        x=df_combo_last.index,
+        yaxis='y2',
+        marker_color='blue',
+    )),
+
+    
+
+    dsci_layout = go.Layout(
+        height= 500,
+        title='Mean DSCI and Negative Volume Change',
+        yaxis={'title':'MAF', 'overlaying': 'y2'},
+        yaxis2={'title': 'DSCI', 'side': 'right'},
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+    )
+
+    diff_layout = go.Layout(
+        height = 500,
+        title = 'DSCI',
+        yaxis = {'title':'DSCI', 'overlaying': 'y2'},
+        yaxis2 = {'title': 'MAF', 'side': 'right'},
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+    )
+
+    return {'data': drought_traces, 'layout': drought_layout}, {'data': dsci_traces, 'layout': dsci_layout}, {'data': diff_traces, 'layout': diff_layout}
+
+@app.callback(
+    Output('drought-data', 'data'),
+    Input('interval-component', 'n_intervals'))
+def data(n):
+    url = 'https://usdmdataservices.unl.edu/api/StateStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=08&startdate=1/1/2000&enddate=' + today + '&statisticsType=2'
+
+    # combo_data = pd.read_json(com)
+    # print(combo_data)
+    r = requests.get(url).content
+
+    df = pd.read_json(io.StringIO(r.decode('utf-8')))
+    # print(df)
+
+    df['date'] = pd.to_datetime(df['MapDate'].astype(str), format='%Y%m%d')
+
+    df.drop(['StatisticFormatID', 'StateAbbreviation', 'MapDate'] , axis=1, inplace=True)
+    df.set_index('date', inplace=True)
+    # print(df)
+    df['DSCI'] = (df['D0'] + (df['D1']*2) + (df['D2']*3) + (df['D3']*4 + (df['D4']*5)))
+    # print(df)
+    return df.to_json()
+
 
 
 if __name__ == '__main__':

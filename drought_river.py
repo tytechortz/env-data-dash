@@ -69,52 +69,72 @@ def drought_river_App():
             className='row'
         ),
         html.Div([
-        html.Div([
-            html.Div([
-                dcc.Graph(
-                    id='drought-graph'
-                )
-            ],
-                className='eight columns'
-            ),
             html.Div([
                 html.Div([
+                    dcc.Graph(
+                        id='drought-graph'
+                    )
+                ],
+                    className='eight columns'
+                ),
+                html.Div([
                     html.Div([
-                        dcc.Markdown('''Moving Avg in Weeks'''),
-                    ],
-                        className='two columns'
-                    ),
-                    html.Div([
-                        dcc.Input(
-                            id='MA-input',
-                            type='number',
-                            step=5,
-                            value=1
+                        html.Div([
+                            dcc.Markdown('''Moving Avg in Weeks'''),
+                        ],
+                            className='two columns'
+                        ),
+                        html.Div([
+                            dcc.Input(
+                                id='MA-input',
+                                type='number',
+                                step=5,
+                                value=1
+                            ),
+                        ],
+                            className='two columns'
                         ),
                     ],
-                        className='two columns'
+                        className='row'
                     ),
-                ],
-                    className='row'
-                ),
-                html.Div([
                     html.Div([
-                        html.Div(id='drought-stats'),
+                        html.Div([
+                            html.Div(id='drought-stats'),
+                        ],
+                            className='twelve columns'
+                        ),
                     ],
-                        className='twelve columns'
+                        className='row'
                     ),
                 ],
-                    className='row'
+                    className='four columns'
                 ),
             ],
-                className='four columns'
+                className='twelve columns'
+            ),
+        ],      
+            className='row'
+        ),
+        html.Div([
+            html.Div([], className='one column'),
+            html.Div([
+                dcc.RangeSlider(
+                    id='drought-year',
+                    min=2000,
+                    max=2021,
+                    # step=1,
+                    marks={x: '{}'.format(x) for x in range(2000, 2022)},
+                    value=[2000,2021]
+                )
+            ],
+                className='six columns'
             ),
         ],
-            className='twelve columns'
+            className='row'
         ),
-    ],      
-        className='row'
-    ),
+        dcc.Store(id='drought-data'),
+        dcc.Store(id='combo-water-data'),
+        dcc.Store(id='combo-annual-change'),
     ])
 
 
