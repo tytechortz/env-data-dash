@@ -80,6 +80,7 @@ def dt_App():
         ],
             className='row'
         ),
+        html.Div(id='temp-graph-layout'),
         dcc.Interval(
             id='interval-component',
             interval=500*1000, # in milliseconds

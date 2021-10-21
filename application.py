@@ -1154,7 +1154,7 @@ def data(n):
     Input('interval-component', 'n_intervals'))
 def get_temp_data(n):
     df_all_temps = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate='+ today +'&units=standard')
-    print(df_all_temps)
+    # print(df_all_temps)
     # df_all_temps['DATE'] = pd.to_datetime(df_all_temps['DATE'])
     # df_all_temps = df_all_temps.set_index('DATE')
 
@@ -1169,7 +1169,7 @@ def get_temp_data(data):
     df['DATE'] = pd.to_datetime(df['DATE'])
     df = df.set_index('DATE')
     last_day = df.index[-1].strftime("%Y-%m-%d")
-    print(df)
+    # print(df)
     # ld = last_day.strftime("%Y-%m-%d")
 
     return html.Div([
@@ -1180,6 +1180,31 @@ def get_temp_data(data):
     ],
         className='row'
     ),
+
+@app.callback(
+    Output('layout', 'children'),
+    Input('product', 'value'))
+def get_layout(product):
+    if product == 'temp-graph':
+        return temp-graph-layout
+
+@app.callback(
+    Output('temp-graph-layout', 'children'),
+    Input('temp-data', 'data'))
+def temp_graph(data):
+    df = pd.read_json(data)
+
+    df['DATE'] = pd.to_datetime(df['DATE'])
+    df = df.set_index('DATE')
+    last_day = df.index[-1].strftime("%Y-%m-%d")
+
+    daily_highs = df.resample('D').max()
+    df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
+    print(df_rec_highs)
+
+    return(print('hello'))
+
+
 
 
 
