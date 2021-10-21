@@ -87,12 +87,14 @@ def dt_App():
         ],
             className='row'
         ),
+        html.Div(id='date-title'),
         dcc.Interval(
             id='interval-component',
             interval=500*1000, # in milliseconds
             n_intervals=0
         ),
         dcc.Store(id='temp-data'),
+        # dcc.Store(id='ld'),
 ])
 
 app.layout = dt_App

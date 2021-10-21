@@ -1145,13 +1145,42 @@ def data(n):
     # print(df)
     return df.to_json()
 
+# #############################################################
+#  DENVER TEMPS
+#############################################################
+
 @app.callback(
     Output('temp-data', 'data'),
     Input('interval-component', 'n_intervals'))
 def get_temp_data(n):
     df_all_temps = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate='+ today +'&units=standard')
+    print(df_all_temps)
+    # df_all_temps['DATE'] = pd.to_datetime(df_all_temps['DATE'])
+    # df_all_temps = df_all_temps.set_index('DATE')
 
-    return(print(df_all_temps))
+    return df_all_temps.to_json()
+
+@app.callback(
+    Output('date-title', 'children'),
+    Input('temp-data', 'data'))
+def get_temp_data(data):
+    df = pd.read_json(data)
+
+    df['DATE'] = pd.to_datetime(df['DATE'])
+    df = df.set_index('DATE')
+    last_day = df.index[-1].strftime("%Y-%m-%d")
+    print(df)
+    # ld = last_day.strftime("%Y-%m-%d")
+
+    return html.Div([
+        html.H6(
+            '1950-01-01 through {}'.format(last_day),
+            className='twelve columns',
+            style={'text-align': 'center'})
+    ],
+        className='row'
+    ),
+
 
 
 
