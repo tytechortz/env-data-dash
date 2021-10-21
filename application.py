@@ -994,9 +994,9 @@ def drought_stats(combo_data, value, drought_data, years):
     year1 = years[0]
     year2 = years[1]
     # print(df)
-    print(years)
+    # print(years)
     selected_df = df.loc[(df.index.year >= year1) & (df.index.year <= year2)]
-    print(selected_df)
+    # print(selected_df)
     max_dsci = selected_df.DSCI.max()
     max_dsci_date = selected_df.DSCI.idxmax().strftime('%Y-%m-%d')
 
@@ -1013,26 +1013,25 @@ def drought_stats(combo_data, value, drought_data, years):
     Output('dsci-graph', 'figure'),
     Output('diff-graph', 'figure'),],
     [Input('combo-water-data', 'data'),
-    Input('drought-data', 'data')])
-def drought_graphs(combo_data, drought_data):
-    df = pd.read_json(drought_data)
-    # df_last = pd.read_json(last)
-    # print(df_last)
-    # year1 = str(years[0])
-    # year2 = str(years[1])
+    Input('drought-data', 'data'),
+    Input('drought-year', 'value')])
+def drought_graphs(combo_data, drought_data, years):
+    year1 = years[0]
+    year2 = years[1]
 
-    # df['MA'] = df['DSCI'].rolling(window=ma_value).mean()
-    
-    # print(df)
-    # df = df.loc[year1:year2]
-    # print(df)
+    df = pd.read_json(drought_data)
+    selected_df = df.loc[(df.index.year >= year1) & (df.index.year <= year2)]
 
     drought_traces = []
     dsci_traces = []
     diff_traces = []
 
+    
+
     df_combo = pd.read_json(combo_data)
-    df_combo['color'] = np.where(df_combo.index.year % 2 == 1, 'lightblue', 'aqua')
+    # print(df_combo.index.dtypes)
+    selected_combo_df = df_combo.loc[(df_combo.index.year >= year1) & (df_combo.index.year <= year2)]
+    selected_combo_df['color'] = np.where(selected_combo_df.index.year % 2 == 1, 'lightblue', 'aqua')
     df_combo_last = df_combo.groupby(df_combo.index.strftime('%Y')).tail(1)
     df_combo_last['diff'] = df_combo_last['Water Level'].diff()
     df_combo_last['diff'] = df_combo_last['diff'].apply(lambda x: x*-1)
@@ -1048,17 +1047,17 @@ def drought_graphs(combo_data, drought_data):
 
     drought_traces.append(go.Scatter(
         name='DSCI Moving Average',
-        y=df['DSCI'],
-        x=df.index,
+        y=selected_df['DSCI'],
+        x=selected_df.index,
         marker_color = 'red',
         yaxis='y'
     )),
     drought_traces.append(go.Bar(
         name='Volume',
-        y=df_combo['Water Level'],
-        x=df_combo.index,
+        y=selected_combo_df['Water Level'],
+        x=selected_combo_df.index,
         yaxis='y2',
-        marker_color=df_combo['color']
+        marker_color=selected_combo_df['color']
     )),
 
     drought_layout = go.Layout(
