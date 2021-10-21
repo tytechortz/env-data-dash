@@ -145,9 +145,9 @@ def ur_App():
             className='row'
         ),
         dcc.Interval(
-        id='interval-component',
-        interval=500*1000, # in milliseconds
-        n_intervals=0
+            id='interval-component',
+            interval=500*1000, # in milliseconds
+            n_intervals=0
         ),
         dcc.Store(id='blue-mesa-water-data'),
         dcc.Store(id='navajo-water-data'),

@@ -9,6 +9,7 @@ import time
 from colorado_river import river_App, capacities
 from upper_res import ur_App
 from drought_river import drought_river_App
+from denver_temps import dt_App
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
@@ -51,6 +52,11 @@ navajo_data_raw = pd.read_csv(navajo_data_url)
 fg_data_raw = pd.read_csv(fg_data_url)
 # print(blue_mesa_data_raw)
 
+
+df_norms = pd.read_csv('normals.csv')
+# print(df_norms)
+
+
 today = time.strftime("%Y-%m-%d")
 today2 = datetime.now()
 year = datetime.now().year
@@ -62,7 +68,7 @@ days = delta.days
             [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/den-temps':
-        return temp_App()
+        return dt_App()
     elif pathname == '/ice':
         return ice_App()
     elif pathname == '/colorado-river':
@@ -1138,6 +1144,15 @@ def data(n):
     df['DSCI'] = (df['D0'] + (df['D1']*2) + (df['D2']*3) + (df['D3']*4 + (df['D4']*5)))
     # print(df)
     return df.to_json()
+
+@app.callback(
+    Output('temp-data', 'data'),
+    Input('interval-component', 'n_intervals'))
+def get_temp_data(n):
+    df_all_temps = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate='+ today +'&units=standard')
+
+    return(print(df_all_temps))
+
 
 
 
