@@ -28,22 +28,21 @@ def get_nav_bar():
         html.Div([
             html.Div([
                 html.Div([
-                    dcc.Link(
-                        html.H6(children='Mead and Powell'),
-                        href='/colorado-river'
-                    )
+                    dcc.RadioItems(
+                    id='product',
+                    options=[
+                        {'label':'Temperature graphs', 'value':'temp-graph'},
+                        {'label':'Climatology for a day', 'value':'climate-for-day'},
+                        {'label':'Full Record Bar Graphs', 'value':'frbg'},
+                        {'label':'5 Year Moving Avgs', 'value':'fyma-graph'},
+                        {'label':'Full Record Heat Map', 'value':'frhm'},
+                        {'label':'Annual Rankings', 'value':'temp-annual-ranks'},
+                    ],
+                    value='temp-graph',
+                    labelStyle={'display': 'inline'},
+                    ),
                 ],
-                    className='six columns',
-                    style={'text-align': 'center'}
-                ),
-                html.Div([
-                    dcc.Link(
-                        html.H6(children='Upper Reservoirs'),
-                        href='/ur'
-                    )
-                ],
-                    className='six columns',
-                    style={'text-align': 'center'}
+                    className='pretty_container'
                 ),
             ],
                 className='twelve columns'
@@ -61,18 +60,12 @@ def get_nav_bar():
 def get_temp_header():
 
     header = html.Div([
-
-        # html.Div([], className = 'col-2'), #Same as img width, allowing to have the title centrally aligned
-
         html.Div([
-            html.H2(
-                'Denver Climate Data',
-                className='twelve columns',
-                style={'text-align': 'center'}
-            ),
+            html.H3('Denver Central Park Climate Data', style={'text-align': 'center'})
         ],
             className='row'
         ),
+        html.Div(id='date-title'),
     ])
 
     return header
@@ -83,11 +76,10 @@ def dt_App():
         get_nav_bar(),
         get_emptyrow(),
         html.Div([
-            html.H3('Denver Central Park Climate Data', style={'text-align': 'center'})
+       
         ],
             className='row'
         ),
-        html.Div(id='date-title'),
         dcc.Interval(
             id='interval-component',
             interval=500*1000, # in milliseconds
