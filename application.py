@@ -1202,7 +1202,40 @@ def temp_graph(data):
     df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
     print(df_rec_highs)
 
-    return(print('hello'))
+    layout = html.Div([
+        html.H6('Select Period'),
+        html.Div(id='period-picker'),
+        html.Div([
+            html.Div([
+                html.Div(id='temp-graph')
+            ],
+                className='eight columns'
+            ),
+        ],
+            className='row'  
+        ),
+    ])
+
+    return layout
+
+@app.callback(
+    Output('period-picker', 'children'),
+    [Input('product', 'value')])
+def display_period_selector(product_value):
+    return html.Div([
+        dcc.RadioItems(
+            id = 'period',
+            options = [
+                {'label':'Annual (Jan-Dec)', 'value':'annual'},
+                {'label':'Winter (Dec-Feb)', 'value':'winter'},
+                {'label':'Spring (Mar-May)', 'value':'spring'},
+                {'label':'Summer (Jun-Aug)', 'value':'summer'},
+                {'label':'Fall (Sep-Nov)', 'value':'fall'},
+            ],
+            value = 'annual',
+            labelStyle = {'display':'inline'}
+        ),
+    ])
 
 
 
