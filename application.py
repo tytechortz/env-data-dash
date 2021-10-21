@@ -1003,7 +1003,7 @@ def drought_stats(combo_data, value, drought_data, years):
     return html.Div([
         html.H6('Current DSCI = {}'.format(current_dsci)),
         html.H6('DSCI {} weeks ago = {}'.format(value, prev_dsci)),
-        html.H4('Stats For Selected Period'),
+        html.H4('Stats For {} to {}'.format(year1, year2)),
         html.H6('Max DSCI = {} on {}'.format(max_dsci, max_dsci_date))
 
     ])
