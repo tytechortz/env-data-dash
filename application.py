@@ -997,13 +997,14 @@ def drought_stats(combo_data, value, drought_data, years):
     print(years)
     selected_df = df.loc[(df.index.year >= year1) & (df.index.year <= year2)]
     print(selected_df)
-    max_dsci = 250
+    max_dsci = selected_df.DSCI.max()
+    max_dsci_date = selected_df.DSCI.idxmax().strftime('%Y-%m-%d')
 
     return html.Div([
         html.H6('Current DSCI = {}'.format(current_dsci)),
         html.H6('DSCI {} weeks ago = {}'.format(value, prev_dsci)),
         html.H4('Stats For Selected Period'),
-        html.H6('Max DSCI = {}'.format(max_dsci))
+        html.H6('Max DSCI = {} on {}'.format(max_dsci, max_dsci_date))
 
     ])
 
