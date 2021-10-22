@@ -19,6 +19,8 @@ import io
 
 
 today = time.strftime("%Y-%m-%d")
+current_year = datetime.now().year
+current_month = datetime.now().month
 # print(today)
 
 app = dash.Dash(name=__name__, 
@@ -1181,33 +1183,38 @@ def get_temp_data(data):
         className='row'
     ),
 
-@app.callback(
-    Output('layout', 'children'),
-    Input('product', 'value'))
-def get_layout(product):
-    if product == 'temp-graph':
-        return temp-graph-layout
+# @app.callback(
+#     Output('layout', 'children'),
+#     Input('product', 'value'))
+# def get_layout(product):
+#     if product == 'temp-graph':
+#         return 'temperature-graph-layout'
 
 @app.callback(
     Output('temp-graph-layout', 'children'),
-    Input('temp-data', 'data'))
-def temp_graph(data):
-    df = pd.read_json(data)
+    Input('product', 'value'))
+def temp_layout(product):
+    # df = pd.read_json(data)
 
-    df['DATE'] = pd.to_datetime(df['DATE'])
-    df = df.set_index('DATE')
-    last_day = df.index[-1].strftime("%Y-%m-%d")
+    # df['DATE'] = pd.to_datetime(df['DATE'])
+    # df = df.set_index('DATE')
+    # last_day = df.index[-1].strftime("%Y-%m-%d")
 
-    daily_highs = df.resample('D').max()
-    df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
-    print(df_rec_highs)
+    # daily_highs = df.resample('D').max()
+    # df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
+    # print(df_rec_highs)
 
     layout = html.Div([
         html.H6('Select Period'),
-        html.Div(id='period-picker'),
+        html.Div([
+            html.Div(id='period-picker'),
+            html.Div(id='year-picker'),
+        ],
+            className='row'
+        ),
         html.Div([
             html.Div([
-                html.Div(id='temp-graph')
+                dcc.Graph(id='temp-graph'),
             ],
                 className='eight columns'
             ),
@@ -1237,6 +1244,84 @@ def display_period_selector(product_value):
         ),
     ])
 
+@app.callback(
+    Output('year-picker', 'children'),
+    [Input('product', 'value')])
+def display_year_selector(product_value):
+
+    if product_value == 'temp-graph':
+        return html.Div([
+            html.P('Enter Year (YYYY)') ,dcc.Input(
+            id = 'year',
+            type = 'number',
+            value = current_year,
+            min = 1950, max = current_year + 1
+            )
+        ])
+
+@app.callback(
+    Output('temp-graph', 'figure'),
+    [Input('temp-data', 'data'),
+    Input('period', 'value'),
+    Input('year', 'value')])
+def temp_graph(data, period, selected_year):
+    temps = pd.read_json(data)
+    print(period)
+    previous_year = int(selected_year) - 1
+    selected_year = selected_year
+    # print(selected_year)
+
+    temps['DATE'] = pd.to_datetime(temps['DATE'])
+    temps = temps.set_index('DATE')
+    
+    last_day = temps.index[-1].strftime("%Y-%m-%d")
+
+    temps['dif'] = temps['TMAX'] - temps['TMIN']
+    # print(temps)
+    temps_cy = temps[(temps.index.year==selected_year)]
+    # print(temps_cy)
+    temps_py = temps[(temps.index.year==previous_year)][-31:]
+    # print(temps_py)
+    
+    # daily_highs = temps.resample('D').TMAX.max()
+    # df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
+    # print(df_rec_highs)
+    mkr_color = {'color':'lightblue'}
+    print(mkr_color)
+    traces = []
+
+    if period == 'annual':
+        # data = temps_cy
+        annual_temps = temps_cy
+        print(annual_temps)
+    # nh_value = temps['nh']
+    # nl_value = temps['nl']
+    # rh_value = temps['rh']
+    # rl_value = temps['rl']
+        bar_x = annual_temps.index
+        print(bar_x)
+
+        traces.append(go.Bar(
+            y = annual_temps['dif'],
+            x = bar_x,
+            base = annual_temps['TMIN'],
+            name='Temp Range',
+            marker = mkr_color,
+            # hovertemplate = 'Temp Range: %{y} - %{base}<extra></extra><br>'
+        )),
+
+        layout = go.Layout(
+            xaxis = {'rangeslider': {'visible':False},},
+            yaxis = {"title": 'Temperature F'},
+            title ='Daily Temps',
+            paper_bgcolor="#1f2630",
+            plot_bgcolor="#1f2630",
+            font=dict(color="#2cfec1"),
+            height = 500
+        )
+
+        return {'data': traces, 'layout': layout}
+
 
 
 
@@ -1244,4 +1329,4 @@ def display_period_selector(product_value):
 
 
 if __name__ == '__main__':
-    application.run(debug=True, port=8050)
+    app.run_server(port=8050, debug=True)
