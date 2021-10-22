@@ -1308,7 +1308,7 @@ def temp_graph(data, period, selected_year):
         annual_temps = temps_cy
     
         nh_value = temps['nh']
-    # nl_value = temps['nl']
+        nl_value = temps['nl']
     # rh_value = temps['rh']
     # rl_value = temps['rl']
         bar_x = annual_temps.index
@@ -1324,11 +1324,19 @@ def temp_graph(data, period, selected_year):
         )),
 
         traces.append(go.Scatter(
-                y = nh_value,
-                x = bar_x,
-                # hoverinfo='none',
-                name='Normal High',
-                marker = {'color':'indianred'}
+            y = nh_value,
+            x = bar_x,
+            # hoverinfo='none',
+            name='Normal High',
+            marker = {'color':'red'}
+        )),
+
+        traces.append(go.Scatter(
+            y = nl_value,
+            x = bar_x,
+            # hoverinfo='none',
+            name='Normal Low',
+            marker = {'color':'blue'}
         )),
 
         layout = go.Layout(
