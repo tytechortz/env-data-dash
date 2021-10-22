@@ -55,8 +55,7 @@ fg_data_raw = pd.read_csv(fg_data_url)
 # print(blue_mesa_data_raw)
 
 
-df_norms = pd.read_csv('normals.csv')
-# print(df_norms)
+
 
 
 today = time.strftime("%Y-%m-%d")
@@ -1266,6 +1265,10 @@ def display_year_selector(product_value):
     Input('year', 'value')])
 def temp_graph(data, period, selected_year):
     temps = pd.read_json(data)
+
+    df_norms = pd.read_csv('normals.csv')
+    print(df_norms)
+    
     print(period)
     previous_year = int(selected_year) - 1
     selected_year = selected_year
@@ -1282,24 +1285,34 @@ def temp_graph(data, period, selected_year):
     # print(temps_cy)
     temps_py = temps[(temps.index.year==previous_year)][-31:]
     # print(temps_py)
-    
+
+    if int(selected_year) % 4 == 0:
+        df_norms = df_norms
+    else:
+        df_norms = df_norms.drop(df_norms.index[59])
+    df_norms_cy = df_norms[:len(temps_cy.index)]
+    df_norms_py = df_norms[:31]
+
+
+    temps_cy.loc[:,'nh'] = df_norms_cy['DLY-TMAX-NORMAL'].values
+    temps_cy.loc[:,'nl'] = df_norms_cy['DLY-TMIN-NORMAL'].values
     # daily_highs = temps.resample('D').TMAX.max()
     # df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
     # print(df_rec_highs)
     mkr_color = {'color':'lightblue'}
-    print(mkr_color)
+  
     traces = []
 
     if period == 'annual':
-        # data = temps_cy
+        temps = temps_cy
         annual_temps = temps_cy
-        print(annual_temps)
-    # nh_value = temps['nh']
+    
+        nh_value = temps['nh']
     # nl_value = temps['nl']
     # rh_value = temps['rh']
     # rl_value = temps['rl']
         bar_x = annual_temps.index
-        print(bar_x)
+    
 
         traces.append(go.Bar(
             y = annual_temps['dif'],
@@ -1307,7 +1320,15 @@ def temp_graph(data, period, selected_year):
             base = annual_temps['TMIN'],
             name='Temp Range',
             marker = mkr_color,
-            # hovertemplate = 'Temp Range: %{y} - %{base}<extra></extra><br>'
+            hovertemplate = 'Temp Range: %{y} - %{base}<extra></extra><br>'
+        )),
+
+        traces.append(go.Scatter(
+                y = nh_value,
+                x = bar_x,
+                # hoverinfo='none',
+                name='Normal High',
+                marker = {'color':'indianred'}
         )),
 
         layout = go.Layout(
