@@ -1170,7 +1170,8 @@ def rec_high_temps(selected_year, temp_data):
     df = df.set_index('DATE')
 
     daily_highs = df.resample('D').max()
-    df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
+    print(daily_highs)
+    df_rec_highs = daily_highs.groupby([daily_highs['TMAX'].index.month, daily_highs['TMAX'].index.day]).max()
     # print(df_rec_highs)
 
 
@@ -1179,6 +1180,23 @@ def rec_high_temps(selected_year, temp_data):
     else:
         rec_highs = df_rec_highs.drop(df_rec_highs.index[59])
     return rec_highs.to_json()
+
+@app.callback(Output('rec-lows', 'data'),
+             [Input('year', 'value'),
+             Input('temp-data', 'data')])
+def rec_low_temps(selected_year, temp_data):
+    df = pd.read_json(temp_data)
+    df['DATE'] = pd.to_datetime(df['DATE'])
+    df = df.set_index('DATE')
+
+    daily_lows = df.resample('D').min()
+    df_rec_lows = daily_lows.groupby([daily_lows.index.month, daily_lows.index.day]).min()
+
+    if int(selected_year) % 4 == 0:
+        rec_lows = df_rec_lows
+    else:
+        rec_lows = df_rec_lows.drop(df_rec_lows.index[59])
+    return rec_lows.to_json()
 
 @app.callback(
     Output('date-title', 'children'),
@@ -1282,8 +1300,9 @@ def display_year_selector(product_value):
     [Input('temp-data', 'data'),
     Input('period', 'value'),
     Input('year', 'value'),
-    Input('rec-highs', 'data')])
-def temp_graph(data, period, selected_year, rec_highs):
+    Input('rec-highs', 'data'),
+    Input('rec-lows', 'data')])
+def temp_graph(data, period, selected_year, rec_highs,rec_lows):
     temps = pd.read_json(data)
 
     
@@ -1309,6 +1328,9 @@ def temp_graph(data, period, selected_year, rec_highs):
 
     df_record_highs_ly = pd.read_json(rec_highs)
     df_rh_cy = df_record_highs_ly[:len(temps_cy.index)]
+
+    df_record_lows_ly = pd.read_json(rec_lows)
+    df_rl_cy = df_record_lows_ly[:len(temps_cy.index)]
     
     
 
@@ -1324,7 +1346,7 @@ def temp_graph(data, period, selected_year, rec_highs):
     # df_rh_cy = rec_highs[:len(temps_cy.index)]
     temps_cy.loc[:,'nh'] = df_norms_cy['DLY-TMAX-NORMAL'].values
     temps_cy.loc[:,'nl'] = df_norms_cy['DLY-TMIN-NORMAL'].values
-    # temps_cy.loc[:,'rl'] = df_rl_cy['TMIN'].values
+    temps_cy.loc[:,'rl'] = df_rl_cy['TMIN'].values
     temps_cy.loc[:,'rh'] = df_rh_cy['TMAX'].values
 
     
@@ -1342,7 +1364,7 @@ def temp_graph(data, period, selected_year, rec_highs):
         nh_value = temps['nh']
         nl_value = temps['nl']
         rh_value = temps['rh']
-    # rl_value = temps['rl']
+        rl_value = temps['rl']
         bar_x = annual_temps.index
     
 
@@ -1377,6 +1399,14 @@ def temp_graph(data, period, selected_year, rec_highs):
             # hoverinfo='none',
             name='Record High',
             marker = {'color':'red'}
+        )),
+
+        traces.append(go.Scatter(
+            y = rl_value,
+            x = bar_x,
+            # hoverinfo='none',
+            name='Record Low',
+            marker = {'color':'blue'}
         )),
 
         layout = go.Layout(
