@@ -88,7 +88,7 @@ def dt_App():
             n_intervals=0
         ),
         dcc.Store(id='temp-data'),
-        # dcc.Store(id='ld'),
+        dcc.Store(id='rec-highs'),
 ])
 
 app.layout = dt_App
