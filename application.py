@@ -1484,7 +1484,7 @@ def temp_graph(data, period, selected_year, rec_highs,rec_lows):
     layout = go.Layout(
         xaxis = {'rangeslider': {'visible':False},},
         yaxis = {"title": 'Temperature F'},
-        title ='Daily Temps',
+        title ='{} Daily Temps'.format(selected_year),
         paper_bgcolor="#1f2630",
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
