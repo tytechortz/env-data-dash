@@ -1381,6 +1381,54 @@ def temp_graph(data, period, selected_year, rec_highs,rec_lows):
         rl_value = temps['rl']
         bar_x = temps.index
 
+    elif period == 'winter':
+        date_range = []
+        date_time = []
+        sdate = date(int(previous_year), 12, 1)
+        edate = date(int(selected_year), 12, 31)
+
+        delta = edate - sdate
+
+        for i in range(delta.days + 1):
+            day = sdate + timedelta(days=i)
+            date_range.append(day)
+        for j in date_range:
+            day = j.strftime("%Y-%m-%d")
+            date_time.append(day)
+
+        temps_py = temps_py[temps_py.index.month.isin([12])]
+        temps_cy = temps_cy[temps_cy.index.month.isin([1,2])]
+        temp_frames = [temps_py, temps_cy]
+        temps = pd.concat(temp_frames, sort=True)
+        date_time = date_time[:91]  
+
+
+        df_record_highs_jan_feb = df_record_highs_ly[df_record_highs_ly.index.str.match(pat = '(1-)|(2-)')]
+        df_record_highs_dec = df_record_highs_ly[df_record_highs_ly.index.str.match(pat = '(12-)')]
+        high_frames = [df_record_highs_dec, df_record_highs_jan_feb]
+        df_record_highs = pd.concat(high_frames)
+
+        df_record_lows_jan_feb = df_record_lows_ly[df_record_lows_ly.index.str.match(pat = '(1-)|(2-)')]
+        df_record_lows_dec = df_record_lows_ly[df_record_lows_ly.index.str.match(pat = '(12-)')]
+        low_frames = [df_record_lows_dec, df_record_lows_jan_feb]
+        df_record_lows = pd.concat(low_frames)
+
+        df_high_norms_jan_feb = df_norms['DLY-TMAX-NORMAL'][0:60]
+        df_high_norms_dec = df_norms['DLY-TMAX-NORMAL'][335:]
+        high_norm_frames = [df_high_norms_dec, df_high_norms_jan_feb]
+        df_high_norms = pd.concat(high_norm_frames)
+
+        df_low_norms_jan_feb = df_norms['DLY-TMIN-NORMAL'][0:60]
+        df_low_norms_dec = df_norms['DLY-TMIN-NORMAL'][335:]
+        low_norm_frames = [df_low_norms_dec, df_low_norms_jan_feb]
+        df_low_norms = pd.concat(low_norm_frames)
+
+        bar_x = date_time
+        nh_value = df_high_norms
+        nl_value = df_low_norms
+        rh_value = df_record_highs['TMAX']
+        rl_value = df_record_lows['TMIN']
+
     elif period == 'annual':
         temps = temps_cy
         # annual_temps = temps_cy
