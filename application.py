@@ -1591,16 +1591,8 @@ def display_climate_day_table(all_data, selected_date):
     dr = pd.read_json(all_data)
     # print(dr)
     dr.index = pd.to_datetime(dr.index, unit='ms')
-    # print(type(dr.index))
-    # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
-    # dr.set_index(['Date'], inplace=True)
-    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
-    # dr = dr.reset_index()
-    
-    # dr.index = pd.to_datetime(dr.index, unit='ms')
-    # print(type(dr.index))
    
-    # print(dr)
+    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
 
     dr = dr.drop('STATION', axis=1)
     # dr["Date"] = dr.index
@@ -1609,9 +1601,6 @@ def display_climate_day_table(all_data, selected_date):
     dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
     # print(dr)
 
-    # columns=[
-    #     {"name": i, "id": i,"selectable": True} for i in dr.columns
-    # ]
 
     columns=[
       {'name': 'DATE', 'id': 'DATE', 'selectable': True},
@@ -1619,8 +1608,6 @@ def display_climate_day_table(all_data, selected_date):
       {'name': 'TMIN', 'id': 'TMIN', 'selectable': True},
     ]
     
-    # dr['Date'] = dr.index.dt.strftime('%Y-%m-%d')
-    # dr.index = dr.index.strftime('%Y-%m-%d')
     d_max_max = dr['TMAX'].max()
     avg_of_dly_highs = dr['TMAX'].mean()
     d_min_max = dr['TMAX'].min()
@@ -1651,16 +1638,6 @@ def temp_layout(product):
 
         return layout
 
-# @app.callback(
-#     Output('layout', 'children'),
-#     Input('product', 'value'))
-# def layout_selector(product):
-#     if product == 'temp-graph':
-#         return 'temp-graph-layout'
-#     elif product == 'climate-for-day':
-#         return 'climate-layout'
-    
-    
 
 
 
