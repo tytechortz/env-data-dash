@@ -1170,7 +1170,7 @@ def rec_high_temps(selected_year, temp_data):
     df = df.set_index('DATE')
 
     daily_highs = df.resample('D').max()
-    print(daily_highs)
+    # print(daily_highs)
     df_rec_highs = daily_highs.groupby([daily_highs['TMAX'].index.month, daily_highs['TMAX'].index.day]).max()
     # print(df_rec_highs)
 
@@ -1309,7 +1309,7 @@ def temp_graph(data, period, selected_year, rec_highs,rec_lows):
     df_norms = pd.read_csv('normals.csv')
     # print(df_norms)
     
-    # print(period)
+    print(period)
     previous_year = int(selected_year) - 1
     selected_year = selected_year
     # print(selected_year)
@@ -1357,69 +1357,85 @@ def temp_graph(data, period, selected_year, rec_highs,rec_lows):
   
     traces = []
 
-    if period == 'annual':
+    if period == 'spring':
+        temps = temps_cy[temps_cy.index.month.isin([3,4,5])]
+        nh_value = temps['nh']
+        nl_value = temps['nl']
+        rh_value = temps['rh']
+        rl_value = temps['rl']
+        bar_x = temps.index
+
+    elif period == 'summer':
+        temps = temps_cy[temps_cy.index.month.isin([6,7,8])]
+        nh_value = temps['nh']
+        nl_value = temps['nl']
+        rh_value = temps['rh']
+        rl_value = temps['rl']
+        bar_x = temps.index
+
+    elif period == 'annual':
         temps = temps_cy
-        annual_temps = temps_cy
+        # annual_temps = temps_cy
     
         nh_value = temps['nh']
         nl_value = temps['nl']
         rh_value = temps['rh']
         rl_value = temps['rl']
-        bar_x = annual_temps.index
+        bar_x = temps.index
     
 
-        traces.append(go.Bar(
-            y = annual_temps['dif'],
-            x = bar_x,
-            base = annual_temps['TMIN'],
-            name='Temp Range',
-            marker = mkr_color,
-            hovertemplate = 'Temp Range: %{y} - %{base}<extra></extra><br>'
-        )),
+    traces.append(go.Bar(
+        y = temps['dif'],
+        x = bar_x,
+        base = temps['TMIN'],
+        name='Temp Range',
+        marker = mkr_color,
+        hovertemplate = 'Temp Range: %{y} - %{base}<extra></extra><br>'
+    )),
 
-        traces.append(go.Scatter(
-            y = nh_value,
-            x = bar_x,
-            # hoverinfo='none',
-            name='Normal High',
-            marker = {'color':'indianred'}
-        )),
+    traces.append(go.Scatter(
+        y = nh_value,
+        x = bar_x,
+        # hoverinfo='none',
+        name='Normal High',
+        marker = {'color':'indianred'}
+    )),
 
-        traces.append(go.Scatter(
-            y = nl_value,
-            x = bar_x,
-            # hoverinfo='none',
-            name='Normal Low',
-            marker = {'color':'blue'}
-        )),
+    traces.append(go.Scatter(
+        y = nl_value,
+        x = bar_x,
+        # hoverinfo='none',
+        name='Normal Low',
+        marker = {'color':'blue'}
+    )),
 
-        traces.append(go.Scatter(
-            y = rh_value,
-            x = bar_x,
-            # hoverinfo='none',
-            name='Record High',
-            marker = {'color':'red'}
-        )),
+    traces.append(go.Scatter(
+        y = rh_value,
+        x = bar_x,
+        # hoverinfo='none',
+        name='Record High',
+        marker = {'color':'red'}
+    )),
 
-        traces.append(go.Scatter(
-            y = rl_value,
-            x = bar_x,
-            # hoverinfo='none',
-            name='Record Low',
-            marker = {'color':'blue'}
-        )),
+    traces.append(go.Scatter(
+        y = rl_value,
+        x = bar_x,
+        # hoverinfo='none',
+        name='Record Low',
+        marker = {'color':'blue'}
+    )),
 
-        layout = go.Layout(
-            xaxis = {'rangeslider': {'visible':False},},
-            yaxis = {"title": 'Temperature F'},
-            title ='Daily Temps',
-            paper_bgcolor="#1f2630",
-            plot_bgcolor="#1f2630",
-            font=dict(color="#2cfec1"),
-            height = 500
-        )
+    layout = go.Layout(
+        xaxis = {'rangeslider': {'visible':False},},
+        yaxis = {"title": 'Temperature F'},
+        title ='Daily Temps',
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+        height = 500
+    )
 
-        return {'data': traces, 'layout': layout}
+    return {'data': traces, 'layout': layout}
 
 
 
