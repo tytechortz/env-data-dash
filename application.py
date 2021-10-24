@@ -24,7 +24,7 @@ current_month = datetime.now().month
 # print(today)
 
 app = dash.Dash(name=__name__, 
-                title="Environnmental Data Dashboard",
+                title="Environmental Data Dashboard",
                 assets_folder="static",
                 assets_url_path="static")
 
@@ -1254,6 +1254,12 @@ def temp_layout(product):
             ],
                 className='eight columns'
             ),
+
+        html.Div([
+            html.Div('Day Count', style={'text-align':'center'}),
+        ],
+            className='four columns'
+        ),
         ],
             className='row'  
         ),
