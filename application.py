@@ -1373,6 +1373,14 @@ def temp_graph(data, period, selected_year, rec_highs,rec_lows):
         rl_value = temps['rl']
         bar_x = temps.index
 
+    elif period == 'fall':
+        temps = temps_cy[temps_cy.index.month.isin([9,10,11])]
+        nh_value = temps['nh']
+        nl_value = temps['nl']
+        rh_value = temps['rh']
+        rl_value = temps['rl']
+        bar_x = temps.index
+
     elif period == 'annual':
         temps = temps_cy
         # annual_temps = temps_cy
