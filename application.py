@@ -1230,42 +1230,34 @@ def get_temp_data(data):
     Output('temp-graph-layout', 'children'),
     Input('product', 'value'))
 def temp_layout(product):
-    # df = pd.read_json(data)
+    if product == 'temp-graph':
 
-    # df['DATE'] = pd.to_datetime(df['DATE'])
-    # df = df.set_index('DATE')
-    # last_day = df.index[-1].strftime("%Y-%m-%d")
-
-    # daily_highs = df.resample('D').max()
-    # df_rec_highs = daily_highs.groupby([daily_highs.index.month, daily_highs.index.day]).max()
-    # print(df_rec_highs)
-
-    layout = html.Div([
-        html.H6('Select Period'),
-        html.Div([
-            html.Div(id='period-picker'),
-            html.Div(id='year-picker'),
-        ],
-            className='row'
-        ),
-        html.Div([
+        layout = html.Div([
+            html.H6('Select Period'),
             html.Div([
-                dcc.Graph(id='temp-graph'),
+                html.Div(id='period-picker'),
+                html.Div(id='year-picker'),
             ],
-                className='eight columns'
+                className='row'
             ),
-
             html.Div([
-                html.Div(id='graph-stats'),
-            ],
-                className='four columns'
-            ),
-        ],
-            className='row'  
-        ),
-    ])
+                html.Div([
+                    dcc.Graph(id='temp-graph'),
+                ],
+                    className='eight columns'
+                ),
 
-    return layout
+                html.Div([
+                    html.Div(id='graph-stats'),
+                ],
+                    className='four columns'
+                ),
+            ],
+                className='row'  
+            ),
+        ])
+
+        return layout
 
 @app.callback(
     Output('period-picker', 'children'),
@@ -1582,11 +1574,93 @@ def display_graph_stats(temps, selected_product):
             ],
                 className='round1'
             ),
+   
+
+@app.callback([
+    Output('datatable-interactivity', 'data'),
+    Output('datatable-interactivity', 'columns'),
+    Output('d-max-max', 'data'),
+    Output('avg-of-dly-highs', 'data'),
+    Output('d-min-max', 'data'),
+    Output('d-min-min', 'data'),
+    Output('avg-of-dly-lows', 'data'),
+    Output('d-max-min', 'data')],
+    [Input('all-data', 'data'),
+    Input('date', 'date')])
+def display_climate_day_table(all_data, selected_date):
+    dr = pd.read_json(all_data)
+    # print(dr)
+    dr.index = pd.to_datetime(dr.index, unit='ms')
+    # print(type(dr.index))
+    # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+    # dr.set_index(['Date'], inplace=True)
+    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    # dr = dr.reset_index()
+    
+    # dr.index = pd.to_datetime(dr.index, unit='ms')
+    # print(type(dr.index))
+   
+    # print(dr)
+
+    dr = dr.drop('STATION', axis=1)
+    # dr["Date"] = dr.index
+    dr.index = pd.DatetimeIndex(dr.index).strftime("%Y-%m-%d")
+    # print(dr)
+    dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
+    # print(dr)
+
+    # columns=[
+    #     {"name": i, "id": i,"selectable": True} for i in dr.columns
+    # ]
+
+    columns=[
+      {'name': 'DATE', 'id': 'DATE', 'selectable': True},
+      {'name': 'TMAX', 'id': 'TMAX', 'selectable': True},
+      {'name': 'TMIN', 'id': 'TMIN', 'selectable': True},
+    ]
+    
+    # dr['Date'] = dr.index.dt.strftime('%Y-%m-%d')
+    # dr.index = dr.index.strftime('%Y-%m-%d')
+    d_max_max = dr['TMAX'].max()
+    avg_of_dly_highs = dr['TMAX'].mean()
+    d_min_max = dr['TMAX'].min()
+    d_min_min = dr['TMIN'].min()
+    avg_of_dly_lows = dr['TMIN'].mean()
+    d_max_min = dr['TMIN'].max()
+
+    return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min 
 
 
+@app.callback(
+    Output('climate-layout', 'children'),
+    Input('product', 'value'))
+def temp_layout(product):
+    if product == 'climate-for-day':
 
+        layout = html.Div([
+            html.Div([
+                html.Div([
+                    html.Div('Maximum Temperatures', style={'text-align':'center', 'color':'red'})
+                ],
+                className='six columns'
+                ),
+            ],
+                className='row'
+            ),
+        ])
 
+        return layout
 
+# @app.callback(
+#     Output('layout', 'children'),
+#     Input('product', 'value'))
+# def layout_selector(product):
+#     if product == 'temp-graph':
+#         return 'temp-graph-layout'
+#     elif product == 'climate-for-day':
+#         return 'climate-layout'
+    
+    
 
 
 

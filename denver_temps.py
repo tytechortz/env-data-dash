@@ -81,6 +81,7 @@ def dt_App():
             className='row'
         ),
         html.Div(id='temp-graph-layout'),
+        html.Div(id='climate-layout'),
         # dcc.Graph(id='temp-graph'),
         dcc.Interval(
             id='interval-component',
@@ -91,6 +92,13 @@ def dt_App():
         dcc.Store(id='rec-highs'),
         dcc.Store(id='rec-lows'),
         dcc.Store(id='temps'),
+        dcc.Store(id='d-max-max'),
+        dcc.Store(id='avg-of-dly-highs'),
+        dcc.Store(id='d-min-max'),
+        dcc.Store(id='d-min-min'),
+        dcc.Store(id='avg-of-dly-lows'),
+        dcc.Store(id='d-max-min'),
+        dcc.Store(id='layout'),
 ])
 
 app.layout = dt_App

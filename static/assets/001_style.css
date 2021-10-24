@@ -857,3 +857,10 @@ div, svg {
 ._dash-undo-redo {
     display: none;
 }
+
+.round1 {
+    padding: 5px;
+    border: 2px solid #dadada;
+    border-radius : 5px;
+    background-color: rgb(249,249,249);
+         }
