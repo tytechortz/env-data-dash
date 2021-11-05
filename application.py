@@ -1277,7 +1277,16 @@ def temp_layout(product):
         layout = html.Div([
             html.H6('Select Date'),
             html.Div([
-                html.Div(id='date-picker'),
+                html.Div([
+                    html.Div(id='date-picker'),
+                ],
+                    className='five columns'
+                ),
+                html.Div([
+                    html.Div(id='temp-param-picker'),
+                ],
+                    className='seven columns'
+                ),
             ],
                 className='row'
             ),
@@ -1289,6 +1298,11 @@ def temp_layout(product):
             html.Div([
                 html.Div([
                     html.Div(id='datatable-interactivity')
+                ],
+                    className='four columns'
+                ),
+                html.Div([
+                    html.Div(id='climate-day-bar')
                 ],
                     className='four columns'
                 ),
@@ -1347,6 +1361,20 @@ def display_date_selector(product_value):
                 display_format='MM-DD',
                 date=today
             )
+
+@app.callback(
+    Output('temp-param-picker', 'children'),
+    Input('product', 'value'))
+    # Input('year', 'value')])
+def display_date_selector(product_value):
+    # print(product_value)
+    # if product_value == 'climate-for-day':
+    return  html.P('Select Temp. Parameter'), dcc.DatePickerSingle(
+                id='temp-param',
+                display_format='MM-DD',
+                date=today
+            )
+
 
 @app.callback(
     [Output('temp-graph', 'figure'),
@@ -1705,6 +1733,115 @@ def display_climate_table(value, product):
     page_current= 0,
     page_size= 10,
     )
+
+
+@app.callback(
+    Output('climate-day-bar', 'figure'),
+    [Input('date', 'date'),
+    Input('all-data', 'children'),
+    Input('temp-param', 'value'),
+    Input('product', 'value')])
+def climate_day_graph(selected_date, all_data, selected_param, selected_product):
+    dr = pd.read_json(all_data)
+    dr.index = pd.to_datetime(dr.index, unit='ms')
+    # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+    # dr.set_index(['Date'], inplace=True)
+    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    dr['AMAX'] = dr['TMAX'].mean()
+    dr['AMIN'] = dr['TMIN'].mean()
+   
+    xi = arange(0,len(dr['TMAX']))
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMAX'])
+    max_trend = (slope*xi+intercept)
+  
+    dr['MXTRND'] = max_trend
+    xi = arange(0,len(dr['TMIN']))
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMIN'])
+    min_trend = (slope*xi+intercept)
+    dr['MNTRND'] = min_trend
+
+    all_max_temp_fit = pd.DataFrame(max_trend)
+    all_max_temp_fit.index = dr.index
+   
+
+    all_min_temp_fit = pd.DataFrame(min_trend)
+    all_min_temp_fit.index = dr.index
+    
+    title_param = dr.index[0].strftime('%B %d')
+    if selected_param == 'TMAX':
+        y = dr[selected_param]
+        base = 0
+        color_a = 'tomato'
+        color_b = 'red'
+        avg_y = dr['AMAX']
+        trend_y = dr['MXTRND']
+        name = 'temp'
+        name_a = 'avg high'
+        name_b = 'trend'
+        # hovertemplate='TMAX: %{y}'
+        
+
+    elif selected_param == 'TMIN':
+        y = dr[selected_param]
+        base = 0
+        color_a = 'blue'
+        color_b = 'dodgerblue'
+        avg_y = dr['AMIN']
+        trend_y = dr['MNTRND']
+        name = 'temp'
+        name_a = 'avg low'
+        name_b = 'trend'
+        # hovertemplate='TMIN: %{y}'
+
+    else:
+        y = dr['TMAX'] - dr['TMIN']
+        base = dr['TMIN']
+        color_a = 'dodgerblue'
+        color_b = 'tomato'
+        avg_y = dr['AMIN']
+        trend_y = dr['AMAX']
+        name = 'range'
+        name_a = 'avg low'
+        name_b = 'avg high'
+        # hovertemplate='Temp Range: %{y} - %{base}<extra></extra><br>'
+
+    data = [
+        go.Bar(
+            y=y,
+            x=dr.index,
+            base=base,
+            marker={'color':'black'},
+            name=name,
+            # hovertemplate=hovertemplate
+        ),
+        go.Scatter(
+            y=avg_y,
+            x=dr.index,
+            mode = 'lines',
+            name=name_a,
+            line={'color': color_a},
+            # hovertemplate=hovertemplate
+        ),
+        go.Scatter(
+            y=trend_y,
+            x=dr.index,
+            name=name_b,
+            mode = 'lines',
+            line={'color': color_b},
+            # hovertemplate=hovertemplate
+        ),  
+    ]
+    layout = go.Layout(
+        xaxis={'title': 'Year'},
+        yaxis={'title': 'Deg F'},
+        title='{} for {}'.format(selected_param,title_param),
+        plot_bgcolor = 'lightgray',
+        height=340
+    )
+    return {'data': data, 'layout': layout} 
+
+
+
 
 # @app.callback([
 #     Output('datatable-interactivity', 'data'),
