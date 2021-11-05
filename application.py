@@ -1290,7 +1290,7 @@ def temp_layout(product):
                 html.Div([
                     html.Div(id='datatable-interactivity')
                 ],
-                    className='five columns'
+                    className='four columns'
                 ),
             ],
                 className='row'
@@ -1646,7 +1646,7 @@ def get_table_data(data, selected_date, product):
     dr = dr.drop('STATION', axis=1)
     dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
     print(dr)
-    return html.H2('Fear This {}'.format(selected_date)), dr.to_json()
+    return html.H4('Climate Data {}'.format(selected_date)), dr.to_json()
 
 @app.callback([
     Output('datatable-interactivity', 'data'),
@@ -1657,6 +1657,7 @@ def get_table_data(data, selected_date, product):
 def table_output(data, selected_date, product):
     dr = pd.read_json(data)
     dr.index = pd.to_datetime(dr.index, unit='ms')
+    dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
     data = dr.to_dict('records')
 
     columns=[
