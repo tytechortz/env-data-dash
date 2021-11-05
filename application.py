@@ -2,6 +2,7 @@
 import dash
 from dash import dcc
 from dash import html
+from dash import dash_table as dt
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 from homepage import Homepage
@@ -37,6 +38,8 @@ app.layout = html.Div([
     html.Div(id = 'page-content'),
     dcc.Store(id='combo-annual-change', storage_type='session'),
     dcc.Store(id='combo-water-data', storage_type='session'),
+    dcc.Store(id='temps', storage_type='session'),
+    dcc.Store(id='graph-data', storage_type='session')
 ])
 
 powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-29&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
@@ -45,13 +48,15 @@ mead_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=
 
 blue_mesa_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=76&before=' + today + '&after=1999-12-30&filename=Blue%20Mesa%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(2000-01-01%20-%202021-07-14)&order=ASC'
 
+# https://data.usbr.gov/rise/api/result/download?type=csv&itemId=76&before=2021-10-25&after=1999-12-30&filename=Blue%20Mesa%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(2000-01-01%20-%202021-07-14)&order=ASC
+
 navajo_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=613&before=' + today + '&after=1999-12-30&filename=Navajo%20Reservoir%20and%20Dam%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1999-12-31%20-%202021-07-14)&order=ASC'
 
 fg_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=337&before=' + today + '&after=1999-12-30&filename=Flaming%20Gorge%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1999-12-31%20-%202021-07-15)&order=ASC'
 
-blue_mesa_data_raw = pd.read_csv(blue_mesa_data_url)
-navajo_data_raw = pd.read_csv(navajo_data_url)
-fg_data_raw = pd.read_csv(fg_data_url)
+# blue_mesa_data_raw = pd.read_csv(blue_mesa_data_url)
+# navajo_data_raw = pd.read_csv(navajo_data_url)
+# fg_data_raw = pd.read_csv(fg_data_url)
 # print(blue_mesa_data_raw)
 
 
@@ -1151,24 +1156,29 @@ def data(n):
 #############################################################
 
 @app.callback(
-    Output('temp-data', 'data'),
-    Input('interval-component', 'n_intervals'))
-def get_temp_data(n):
+    Output('all-data', 'data'),
+    [Input('interval-component', 'n_intervals'),
+    Input('product', 'value')])
+def get_temp_data(n, product):
     df_all_temps = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate='+ today +'&units=standard')
+    
+    df_all_temps['DATE'] = pd.to_datetime(df_all_temps['DATE'])
+    df_all_temps = df_all_temps.set_index('DATE')
     # print(df_all_temps)
-    # df_all_temps['DATE'] = pd.to_datetime(df_all_temps['DATE'])
-    # df_all_temps = df_all_temps.set_index('DATE')
 
     return df_all_temps.to_json()
 
 @app.callback(Output('rec-highs', 'data'),
              [Input('year', 'value'),
-             Input('temp-data', 'data')])
+             Input('all-data', 'data')])
 def rec_high_temps(selected_year, temp_data):
     df = pd.read_json(temp_data)
-    df['DATE'] = pd.to_datetime(df['DATE'])
-    df = df.set_index('DATE')
-
+    # print(df)
+    df.index = pd.to_datetime(df.index, unit='ms')
+    # print(df)
+    # df['DATE'] = pd.to_datetime(df['DATE'])
+    # df = df.set_index('DATE')
+    
     daily_highs = df.resample('D').max()
     # print(daily_highs)
     df_rec_highs = daily_highs.groupby([daily_highs['TMAX'].index.month, daily_highs['TMAX'].index.day]).max()
@@ -1183,12 +1193,13 @@ def rec_high_temps(selected_year, temp_data):
 
 @app.callback(Output('rec-lows', 'data'),
              [Input('year', 'value'),
-             Input('temp-data', 'data')])
+             Input('all-data', 'data')])
 def rec_low_temps(selected_year, temp_data):
     df = pd.read_json(temp_data)
-    df['DATE'] = pd.to_datetime(df['DATE'])
-    df = df.set_index('DATE')
-
+    # df['DATE'] = pd.to_datetime(df['DATE'])
+    # df = df.set_index('DATE')
+    df.index = pd.to_datetime(df.index, unit='ms')
+    # print(df)
     daily_lows = df.resample('D').min()
     df_rec_lows = daily_lows.groupby([daily_lows.index.month, daily_lows.index.day]).min()
 
@@ -1200,12 +1211,14 @@ def rec_low_temps(selected_year, temp_data):
 
 @app.callback(
     Output('date-title', 'children'),
-    Input('temp-data', 'data'))
+    Input('all-data', 'data'))
 def get_temp_data(data):
     df = pd.read_json(data)
+    df.index = pd.to_datetime(df.index, unit='ms')
+    # print(df)
 
-    df['DATE'] = pd.to_datetime(df['DATE'])
-    df = df.set_index('DATE')
+    # df['DATE'] = pd.to_datetime(df['DATE'])
+    # df = df.set_index('DATE')
     last_day = df.index[-1].strftime("%Y-%m-%d")
     # print(df)
     # ld = last_day.strftime("%Y-%m-%d")
@@ -1219,17 +1232,11 @@ def get_temp_data(data):
         className='row'
     ),
 
-# @app.callback(
-#     Output('layout', 'children'),
-#     Input('product', 'value'))
-# def get_layout(product):
-#     if product == 'temp-graph':
-#         return 'temperature-graph-layout'
-
 @app.callback(
     Output('temp-graph-layout', 'children'),
     Input('product', 'value'))
 def temp_layout(product):
+    # print(product)
     if product == 'temp-graph':
 
         layout = html.Div([
@@ -1260,27 +1267,58 @@ def temp_layout(product):
         return layout
 
 @app.callback(
+    Output('climate-layout', 'children'),
+    Input('product', 'value'))
+def temp_layout(product):
+
+    # print(product)
+    if product == 'climate-for-day':
+
+        layout = html.Div([
+            html.H6('Select Date'),
+            html.Div([
+                html.Div(id='date-picker'),
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div(id='climate-stuff')
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div(id='datatable-interactivity')
+            ],
+                className='row'
+            ),
+        ])
+
+        return layout
+
+@app.callback(
     Output('period-picker', 'children'),
     [Input('product', 'value')])
 def display_period_selector(product_value):
-    return html.Div([
-        dcc.RadioItems(
-            id = 'period',
-            options = [
-                {'label':'Annual (Jan-Dec)', 'value':'annual'},
-                {'label':'Winter (Dec-Feb)', 'value':'winter'},
-                {'label':'Spring (Mar-May)', 'value':'spring'},
-                {'label':'Summer (Jun-Aug)', 'value':'summer'},
-                {'label':'Fall (Sep-Nov)', 'value':'fall'},
-            ],
-            value = 'annual',
-            labelStyle = {'display':'inline'}
-        ),
-    ])
+    # print(product_value)
+    if product_value == 'temp-graph':
+        return html.Div([
+            dcc.RadioItems(
+                id = 'period',
+                options = [
+                    {'label':'Annual (Jan-Dec)', 'value':'annual'},
+                    {'label':'Winter (Dec-Feb)', 'value':'winter'},
+                    {'label':'Spring (Mar-May)', 'value':'spring'},
+                    {'label':'Summer (Jun-Aug)', 'value':'summer'},
+                    {'label':'Fall (Sep-Nov)', 'value':'fall'},
+                ],
+                value = 'annual',
+                labelStyle = {'display':'inline'}
+            ),
+        ])
 
 @app.callback(
     Output('year-picker', 'children'),
-    [Input('product', 'value')])
+    Input('product', 'value'))
 def display_year_selector(product_value):
 
     if product_value == 'temp-graph':
@@ -1294,27 +1332,41 @@ def display_year_selector(product_value):
         ])
 
 @app.callback(
+    Output('date-picker', 'children'),
+    Input('product', 'value'))
+    # Input('year', 'value')])
+def display_date_selector(product_value):
+    # print(product_value)
+    # if product_value == 'climate-for-day':
+    return  html.P('Select Date (MM-DD)'), dcc.DatePickerSingle(
+                id='selected-date',
+                display_format='MM-DD',
+                date=today
+            )
+
+@app.callback(
     [Output('temp-graph', 'figure'),
     Output('temps', 'data')],
-    [Input('temp-data', 'data'),
+    [Input('all-data', 'data'),
     Input('period', 'value'),
     Input('year', 'value'),
     Input('rec-highs', 'data'),
     Input('rec-lows', 'data')])
 def temp_graph(data, period, selected_year, rec_highs,rec_lows):
     temps = pd.read_json(data)
-
+    temps.index = pd.to_datetime(temps.index, unit='ms')
+    # print(temps)
     
     df_norms = pd.read_csv('normals.csv')
     # print(df_norms)
     
-    print(period)
+    # print(period)
     previous_year = int(selected_year) - 1
     selected_year = selected_year
     # print(selected_year)
 
-    temps['DATE'] = pd.to_datetime(temps['DATE'])
-    temps = temps.set_index('DATE')
+    temps['DATE'] = temps.index
+    # temps = temps.set_index('DATE')
     # print(temps)
     
     last_day = temps.index[-1].strftime("%Y-%m-%d")
@@ -1347,7 +1399,7 @@ def temp_graph(data, period, selected_year, rec_highs,rec_lows):
     temps_cy.loc[:,'nl'] = df_norms_cy['DLY-TMIN-NORMAL'].values
     temps_cy.loc[:,'rl'] = df_rl_cy['TMIN'].values
     temps_cy.loc[:,'rh'] = df_rh_cy['TMAX'].values
-
+    # print(temps)
     
     
     
@@ -1497,8 +1549,9 @@ def temp_graph(data, period, selected_year, rec_highs,rec_lows):
     [Input('temps', 'data'),
     Input('product','value')])
 def display_graph_stats(temps, selected_product):
-    time.sleep(1)
+    # time.sleep(1)
     temps = pd.read_json(temps)
+    # print(temps)
     temps.index = pd.to_datetime(temps.index, unit='ms')
     temps = temps[np.isfinite(temps['TMAX'])]
     day_count = temps.shape[0]
@@ -1574,69 +1627,155 @@ def display_graph_stats(temps, selected_product):
             ],
                 className='round1'
             ),
-   
+
+@app.callback(
+    [Output('climate-stuff', 'children'),
+    Output('climate-data', 'data')],
+    [Input('all-data', 'data'),
+    Input('selected-date', 'date'),
+    Input('product', 'value')])
+def get_table_data(data, selected_date, product):
+    # print(selected_date)
+    dr = pd.read_json(data)
+    dr.index = pd.to_datetime(dr.index, unit='ms')
+    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    dr = dr.drop('STATION', axis=1)
+    dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
+    print(dr)
+    return html.H2('Fear This {}'.format(selected_date)), dr.to_json()
 
 @app.callback([
     Output('datatable-interactivity', 'data'),
-    Output('datatable-interactivity', 'columns'),
-    Output('d-max-max', 'data'),
-    Output('avg-of-dly-highs', 'data'),
-    Output('d-min-max', 'data'),
-    Output('d-min-min', 'data'),
-    Output('avg-of-dly-lows', 'data'),
-    Output('d-max-min', 'data')],
-    [Input('all-data', 'data'),
-    Input('date', 'date')])
-def display_climate_day_table(all_data, selected_date):
-    dr = pd.read_json(all_data)
-    # print(dr)
+    Output('datatable-interactivity', 'columns')],
+    [Input('climate-data', 'data'),
+    Input('selected-date', 'date'),
+    Input('product', 'value')])
+def table_output(data, selected_date, product):
+    print(selected_date)
+    # columns = []
+    dr = pd.read_json(data)
     dr.index = pd.to_datetime(dr.index, unit='ms')
-   
-    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
-
-    dr = dr.drop('STATION', axis=1)
-    # dr["Date"] = dr.index
-    dr.index = pd.DatetimeIndex(dr.index).strftime("%Y-%m-%d")
-    # print(dr)
-    dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
-    # print(dr)
-
+    data = dr.to_dict('records')
+    print(data)
 
     columns=[
-      {'name': 'DATE', 'id': 'DATE', 'selectable': True},
-      {'name': 'TMAX', 'id': 'TMAX', 'selectable': True},
-      {'name': 'TMIN', 'id': 'TMIN', 'selectable': True},
+        {"name": i, "id": i,"selectable": True} for i in dr.columns
     ]
-    
-    d_max_max = dr['TMAX'].max()
-    avg_of_dly_highs = dr['TMAX'].mean()
-    d_min_max = dr['TMAX'].min()
-    d_min_min = dr['TMIN'].min()
-    avg_of_dly_lows = dr['TMIN'].mean()
-    d_max_min = dr['TMIN'].max()
 
-    return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min 
+    print(columns)
 
+    # columns=[
+    # {'name': 'DATE', 'id': 'date', 'selectable': True},
+    # {'name': 'TMAX', 'id': 'TMAX', 'selectable': True},
+    # {'name': 'TMIN', 'id': 'TMIN', 'selectable': True},
+    # ]
+
+
+
+    return data, columns
 
 @app.callback(
-    Output('climate-layout', 'children'),
-    Input('product', 'value'))
-def temp_layout(product):
-    if product == 'climate-for-day':
+    Output('datatable-interactivity', 'children'),
+    [Input('selected-date', 'date'),
+    Input('product', 'value')])
+def display_climate_table(value, product):
+    # if value == 'climate-for-day':
+    return dt.DataTable(id='datatable-interactivity',
+    data=[{}], 
+    columns=[{'id': 'date', 'name': 'DATE'}], 
+    fixed_rows={'headers': True, 'data': 0},
+    style_cell_conditional=[
+        {'if': {'column_id': 'date'},
+        'width':'100px'},
+        {'if': {'column_id': 'TMAX'},
+        'width':'100px'},
+        {'if': {'column_id': 'TMIN'},
+        'width':'100px'},
+    ],
+    style_data_conditional=[
+        {
+        'if': {'row_index': 'odd'},
+        'backgroundColor': 'rgb(248, 248, 248)'
+        },
+    ],
+    style_header={
+    'backgroundColor': 'rgb(230, 230, 230)',
+    'fontWeight': 'bold'
+    },
+    # editable=True,
+    # filter_action="native",
+    sort_action="native",
+    sort_mode="multi",
+    column_selectable="single",
+    selected_columns=[],
+    selected_rows=[],
+    # page_action="native",
+    page_current= 0,
+    page_size= 10,
+    )
 
-        layout = html.Div([
-            html.Div([
-                html.Div([
-                    html.Div('Maximum Temperatures', style={'text-align':'center', 'color':'red'})
-                ],
-                className='six columns'
-                ),
-            ],
-                className='row'
-            ),
-        ])
+# @app.callback([
+#     Output('datatable-interactivity', 'data'),
+#     Output('datatable-interactivity', 'columns')],
+#     # Output('d-max-max', 'children'),
+#     # Output('avg-of-dly-highs', 'children'),
+#     # Output('d-min-max', 'children'),
+#     # Output('d-min-min', 'children'),
+#     # Output('avg-of-dly-lows', 'children'),
+#     # Output('d-max-min', 'children')],
+#     [Input('all-data', 'data'),
+#     Input('selected-date', 'date')])
+# def display_climate_day_table(all_data, selected_date):
+#     print(selected_date)
+#     # if product == 'climate-for-day':
+#     dr = pd.read_json(all_data)
+#     print(dr)
+#     dr.index = pd.to_datetime(dr.index, unit='ms')
+#     # print(dr)
+#     # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
+#     # dr.set_index(['Date'], inplace=True)
+#     dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+#     # dr = dr.reset_index()
+    
+#     # dr.index = pd.to_datetime(dr.index, unit='ms')
+#     # print(type(dr.index))
 
-        return layout
+#     # print(dr)
+
+#     dr = dr.drop('STATION', axis=1)
+#     # dr["Date"] = dr.index
+#     dr.index = pd.DatetimeIndex(dr.index).strftime("%Y-%m-%d")
+#     # print(dr)
+#     dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
+#     print(dr)
+
+    # columns=[
+    #     {"name": i, "id": i,"selectable": True} for i in dr.columns
+    # ]
+
+#     data = dr.to_dict('records')
+
+    # columns=[
+    # {'name': 'DATE', 'id': 'DATE', 'selectable': True},
+    # {'name': 'TMAX', 'id': 'TMAX', 'selectable': True},
+    # {'name': 'TMIN', 'id': 'TMIN', 'selectable': True},
+    # ]
+
+#     print(columns)
+    
+#     # dr['Date'] = dr.index.dt.strftime('%Y-%m-%d')
+#     # dr.index = dr.index.strftime('%Y-%m-%d')
+#     d_max_max = dr['TMAX'].max()
+#     avg_of_dly_highs = dr['TMAX'].mean()
+#     d_min_max = dr['TMAX'].min()
+#     d_min_min = dr['TMIN'].min()
+#     avg_of_dly_lows = dr['TMIN'].mean()
+#     d_max_min = dr['TMIN'].max()
+
+#     return data, columns
+
+        # return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min    
+
 
 
 
