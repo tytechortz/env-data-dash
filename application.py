@@ -1287,7 +1287,11 @@ def temp_layout(product):
                 className='row'
             ),
             html.Div([
-                html.Div(id='datatable-interactivity')
+                html.Div([
+                    html.Div(id='datatable-interactivity')
+                ],
+                    className='five columns'
+                ),
             ],
                 className='row'
             ),
@@ -1651,26 +1655,13 @@ def get_table_data(data, selected_date, product):
     Input('selected-date', 'date'),
     Input('product', 'value')])
 def table_output(data, selected_date, product):
-    print(selected_date)
-    # columns = []
     dr = pd.read_json(data)
     dr.index = pd.to_datetime(dr.index, unit='ms')
     data = dr.to_dict('records')
-    print(data)
 
     columns=[
         {"name": i, "id": i,"selectable": True} for i in dr.columns
     ]
-
-    print(columns)
-
-    # columns=[
-    # {'name': 'DATE', 'id': 'date', 'selectable': True},
-    # {'name': 'TMAX', 'id': 'TMAX', 'selectable': True},
-    # {'name': 'TMIN', 'id': 'TMIN', 'selectable': True},
-    # ]
-
-
 
     return data, columns
 
@@ -1679,7 +1670,7 @@ def table_output(data, selected_date, product):
     [Input('selected-date', 'date'),
     Input('product', 'value')])
 def display_climate_table(value, product):
-    # if value == 'climate-for-day':
+
     return dt.DataTable(id='datatable-interactivity',
     data=[{}], 
     columns=[{'id': 'date', 'name': 'DATE'}], 
