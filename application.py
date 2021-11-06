@@ -12,6 +12,8 @@ from upper_res import ur_App
 from drought_river import drought_river_App
 from denver_temps import dt_App
 import pandas as pd
+from numpy import arange,array,ones
+from scipy import stats
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 from datetime import datetime, date, timedelta
@@ -1302,9 +1304,9 @@ def temp_layout(product):
                     className='four columns'
                 ),
                 html.Div([
-                    html.Div(id='climate-day-bar')
+                    dcc.Graph(id='climate-day-bar')
                 ],
-                    className='four columns'
+                    className='six columns'
                 ),
             ],
                 className='row'
@@ -1369,11 +1371,16 @@ def display_date_selector(product_value):
 def display_date_selector(product_value):
     # print(product_value)
     # if product_value == 'climate-for-day':
-    return  html.P('Select Temp. Parameter'), dcc.DatePickerSingle(
-                id='temp-param',
-                display_format='MM-DD',
-                date=today
-            )
+    return  html.P('Select Temp. Parameter'),              dcc.RadioItems(
+            id='temp-param',
+            options = [
+                {'label':'Max Temp', 'value':'TMAX'},
+                {'label':'Min Temp', 'value':'TMIN'},
+                {'label':'Temp Range', 'value':'RANGE'},
+            ],
+            value = 'TMAX',
+                labelStyle = {'display':'inline-block'}
+        )
 
 
 @app.callback(
@@ -1673,7 +1680,7 @@ def get_table_data(data, selected_date, product):
     dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
     dr = dr.drop('STATION', axis=1)
     dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
-    print(dr)
+    # print(dr)
     return html.H4('Climate Data {}'.format(selected_date)), dr.to_json()
 
 @app.callback([
@@ -1737,11 +1744,12 @@ def display_climate_table(value, product):
 
 @app.callback(
     Output('climate-day-bar', 'figure'),
-    [Input('date', 'date'),
-    Input('all-data', 'children'),
+    [Input('selected-date', 'date'),
+    Input('climate-data', 'data'),
     Input('temp-param', 'value'),
     Input('product', 'value')])
-def climate_day_graph(selected_date, all_data, selected_param, selected_product):
+def climate_day_bar(selected_date, all_data, selected_param, selected_product):
+    print(selected_param)
     dr = pd.read_json(all_data)
     dr.index = pd.to_datetime(dr.index, unit='ms')
     # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
@@ -1749,7 +1757,7 @@ def climate_day_graph(selected_date, all_data, selected_param, selected_product)
     dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
     dr['AMAX'] = dr['TMAX'].mean()
     dr['AMIN'] = dr['TMIN'].mean()
-   
+    
     xi = arange(0,len(dr['TMAX']))
     slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMAX'])
     max_trend = (slope*xi+intercept)
@@ -1759,7 +1767,7 @@ def climate_day_graph(selected_date, all_data, selected_param, selected_product)
     slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMIN'])
     min_trend = (slope*xi+intercept)
     dr['MNTRND'] = min_trend
-
+    print(dr)
     all_max_temp_fit = pd.DataFrame(max_trend)
     all_max_temp_fit.index = dr.index
    
@@ -1768,6 +1776,9 @@ def climate_day_graph(selected_date, all_data, selected_param, selected_product)
     all_min_temp_fit.index = dr.index
     
     title_param = dr.index[0].strftime('%B %d')
+    print(title_param)
+
+    traces = []
     if selected_param == 'TMAX':
         y = dr[selected_param]
         base = 0
@@ -1775,6 +1786,7 @@ def climate_day_graph(selected_date, all_data, selected_param, selected_product)
         color_b = 'red'
         avg_y = dr['AMAX']
         trend_y = dr['MXTRND']
+        print(trend_y)
         name = 'temp'
         name_a = 'avg high'
         name_b = 'trend'
@@ -1805,32 +1817,40 @@ def climate_day_graph(selected_date, all_data, selected_param, selected_product)
         name_b = 'avg high'
         # hovertemplate='Temp Range: %{y} - %{base}<extra></extra><br>'
 
-    data = [
-        go.Bar(
-            y=y,
-            x=dr.index,
-            base=base,
-            marker={'color':'black'},
-            name=name,
-            # hovertemplate=hovertemplate
-        ),
-        go.Scatter(
-            y=avg_y,
-            x=dr.index,
-            mode = 'lines',
-            name=name_a,
-            line={'color': color_a},
-            # hovertemplate=hovertemplate
-        ),
-        go.Scatter(
-            y=trend_y,
-            x=dr.index,
-            name=name_b,
-            mode = 'lines',
-            line={'color': color_b},
-            # hovertemplate=hovertemplate
-        ),  
-    ]
+    traces.append(go.Bar(
+        y=y,
+        x=dr.index,
+        base=base,
+        marker={'color':'black'},
+        name=name,
+    )),
+
+    # data = [
+    #     go.Bar(
+    #         y=y,
+    #         x=dr.index,
+    #         base=base,
+    #         marker={'color':'black'},
+    #         name=name,
+    #         # hovertemplate=hovertemplate
+    #     ),
+    #     go.Scatter(
+    #         y=avg_y,
+    #         x=dr.index,
+    #         mode = 'lines',
+    #         name=name_a,
+    #         line={'color': color_a},
+    #         # hovertemplate=hovertemplate
+    #     ),
+    #     go.Scatter(
+    #         y=trend_y,
+    #         x=dr.index,
+    #         name=name_b,
+    #         mode = 'lines',
+    #         line={'color': color_b},
+    #         # hovertemplate=hovertemplate
+    #     ),  
+    # ]
     layout = go.Layout(
         xaxis={'title': 'Year'},
         yaxis={'title': 'Deg F'},
@@ -1838,7 +1858,7 @@ def climate_day_graph(selected_date, all_data, selected_param, selected_product)
         plot_bgcolor = 'lightgray',
         height=340
     )
-    return {'data': data, 'layout': layout} 
+    return {'data': traces, 'layout': layout} 
 
 
 
