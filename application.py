@@ -1836,32 +1836,15 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
         # hovertemplate=hovertemplate
     ))
 
-    # data = [
-    #     go.Bar(
-    #         y=y,
-    #         x=dr.index,
-    #         base=base,
-    #         marker={'color':'black'},
-    #         name=name,
-    #         # hovertemplate=hovertemplate
-    #     ),
-    #     go.Scatter(
-    #         y=avg_y,
-    #         x=dr.index,
-    #         mode = 'lines',
-    #         name=name_a,
-    #         line={'color': color_a},
-    #         # hovertemplate=hovertemplate
-    #     ),
-    #     go.Scatter(
-    #         y=trend_y,
-    #         x=dr.index,
-    #         name=name_b,
-    #         mode = 'lines',
-    #         line={'color': color_b},
-    #         # hovertemplate=hovertemplate
-    #     ),  
-    # ]
+    traces.append(go.Scatter(
+        y=trend_y,
+        x=dr.index,
+        name=name_b,
+        mode = 'lines',
+        line={'color': color_b},
+        # hovertemplate=hovertemplate
+    ))
+
     layout = go.Layout(
         xaxis={'title': 'Year'},
         yaxis={'title': 'Deg F'},
@@ -1872,9 +1855,6 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
         height=500
     )
     return {'data': traces, 'layout': layout} 
-
-
-
 
 # @app.callback([
 #     Output('datatable-interactivity', 'data'),
