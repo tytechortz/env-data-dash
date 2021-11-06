@@ -1311,6 +1311,20 @@ def temp_layout(product):
             ],
                 className='row'
             ),
+            html.Div([
+                html.Div([
+                    html.Div('Maximum Temperatures', style={'text-align':'center', 'color':'red'})
+                ],
+                className='six columns'
+                ),
+                html.Div([
+                    html.Div('Minimum Temperatures', style={'text-align':'center', 'color':'aqua'})
+                ],
+                className='six columns'
+                ),
+            ],
+                className='row'
+            ),
         ])
 
         return layout
@@ -1707,7 +1721,13 @@ def get_table_data(data, selected_date, product):
 
 @app.callback([
     Output('datatable-interactivity', 'data'),
-    Output('datatable-interactivity', 'columns')],
+    Output('datatable-interactivity', 'columns'),
+    Output('d-max-max', 'children'),
+    Output('avg-of-dly-highs', 'children'),
+    Output('d-min-max', 'children'),
+    Output('d-min-min', 'children'),
+    Output('avg-of-dly-lows', 'children'),
+    Output('d-max-min', 'children')],
     [Input('climate-data', 'data'),
     Input('selected-date', 'date')])
 def table_output(data, selected_date):
@@ -1718,13 +1738,20 @@ def table_output(data, selected_date):
     dr2 = dr2.fillna(0)
     # print(dr2)
     data = dr2.to_dict('records')
-    print(data)
+    # print(data)
     columns=[
         {"name": i, "id": i,"selectable": False} for i in dr2.columns
     ]
-    print(columns)
 
-    return data, columns
+    d_max_max = dr['TMAX'].max()
+    avg_of_dly_highs = dr['TMAX'].mean()
+    d_min_max = dr['TMAX'].min()
+    d_min_min = dr['TMIN'].min()
+    avg_of_dly_lows = dr['TMIN'].mean()
+    d_max_min = dr['TMIN'].max()
+    # print(columns)
+
+    return data, columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min
 
 @app.callback(
     Output('datatable-interactivity', 'children'),
