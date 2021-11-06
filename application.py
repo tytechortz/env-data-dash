@@ -1306,7 +1306,7 @@ def temp_layout(product):
                 html.Div([
                     dcc.Graph(id='climate-day-bar')
                 ],
-                    className='six columns'
+                    className='eight columns'
                 ),
             ],
                 className='row'
@@ -1687,32 +1687,34 @@ def get_table_data(data, selected_date, product):
     Output('datatable-interactivity', 'data'),
     Output('datatable-interactivity', 'columns')],
     [Input('climate-data', 'data'),
-    Input('selected-date', 'date'),
-    Input('product', 'value')])
-def table_output(data, selected_date, product):
+    Input('selected-date', 'date')])
+def table_output(data, selected_date):
     dr = pd.read_json(data)
     dr.index = pd.to_datetime(dr.index, unit='ms')
-    dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
-    data = dr.to_dict('records')
-
+    dr2 = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    dr2['DATE'] = pd.to_datetime(dr2.index).strftime("%Y-%m-%d")
+    dr2 = dr2.fillna(0)
+    # print(dr2)
+    data = dr2.to_dict('records')
+    print(data)
     columns=[
-        {"name": i, "id": i,"selectable": True} for i in dr.columns
+        {"name": i, "id": i,"selectable": False} for i in dr2.columns
     ]
+    print(columns)
 
     return data, columns
 
 @app.callback(
     Output('datatable-interactivity', 'children'),
-    [Input('selected-date', 'date'),
-    Input('product', 'value')])
-def display_climate_table(value, product):
-
+    Input('selected-date', 'date'))
+def display_climate_table(date):
+    print(date)
     return dt.DataTable(id='datatable-interactivity',
     data=[{}], 
-    columns=[{'id': 'date', 'name': 'DATE'}], 
-    fixed_rows={'headers': True, 'data': 0},
+    columns=[{'id': 'TMAX', 'name': 'TMAX'}, {'id': 'TMIN', 'name': 'TMIN'}, {'id': 'DATE', 'name': 'DATE'}],
+    # fixed_rows={'headers': True, 'data': 0},
     style_cell_conditional=[
-        {'if': {'column_id': 'date'},
+        {'if': {'column_id': 'DATE'},
         'width':'100px'},
         {'if': {'column_id': 'TMAX'},
         'width':'100px'},
@@ -1738,7 +1740,7 @@ def display_climate_table(value, product):
     selected_rows=[],
     # page_action="native",
     page_current= 0,
-    page_size= 10,
+    page_size= 15,
     )
 
 
@@ -1749,7 +1751,7 @@ def display_climate_table(value, product):
     Input('temp-param', 'value'),
     Input('product', 'value')])
 def climate_day_bar(selected_date, all_data, selected_param, selected_product):
-    print(selected_param)
+    # print(selected_param)
     dr = pd.read_json(all_data)
     dr.index = pd.to_datetime(dr.index, unit='ms')
     # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
@@ -1767,7 +1769,7 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
     slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMIN'])
     min_trend = (slope*xi+intercept)
     dr['MNTRND'] = min_trend
-    print(dr)
+    # print(dr)
     all_max_temp_fit = pd.DataFrame(max_trend)
     all_max_temp_fit.index = dr.index
    
@@ -1776,7 +1778,7 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
     all_min_temp_fit.index = dr.index
     
     title_param = dr.index[0].strftime('%B %d')
-    print(title_param)
+    # print(title_param)
 
     traces = []
     if selected_param == 'TMAX':
@@ -1786,7 +1788,7 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
         color_b = 'red'
         avg_y = dr['AMAX']
         trend_y = dr['MXTRND']
-        print(trend_y)
+        # print(trend_y)
         name = 'temp'
         name_a = 'avg high'
         name_b = 'trend'
@@ -1821,9 +1823,18 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
         y=y,
         x=dr.index,
         base=base,
-        marker={'color':'black'},
+        marker={'color':'white'},
         name=name,
     )),
+
+    traces.append(go.Scatter(
+        y=avg_y,
+        x=dr.index,
+        mode = 'lines',
+        name=name_a,
+        line={'color': color_a},
+        # hovertemplate=hovertemplate
+    ))
 
     # data = [
     #     go.Bar(
@@ -1855,8 +1866,10 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
         xaxis={'title': 'Year'},
         yaxis={'title': 'Deg F'},
         title='{} for {}'.format(selected_param,title_param),
-        plot_bgcolor = 'lightgray',
-        height=340
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+        height=500
     )
     return {'data': traces, 'layout': layout} 
 
