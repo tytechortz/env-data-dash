@@ -82,6 +82,7 @@ def dt_App():
         ),
         html.Div(id='temp-graph-layout'),
         html.Div(id='climate-layout'),
+        html.Div(id='frbg-layout'),
         # html.Div(id='date-picker'),
         # dcc.Graph(id='temp-graph'),
         dcc.Interval(

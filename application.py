@@ -1316,6 +1316,28 @@ def temp_layout(product):
         return layout
 
 @app.callback(
+    Output('frbg-layout', 'children'),
+    Input('product', 'value'))
+def temp_layout(product):
+
+    # print(product)
+    if product == 'frbg':
+
+        layout = html.Div([
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='frs-bar')
+                ],
+                    className='eight columns'
+                ),
+            ],
+                className='row'
+            ),
+        ])
+
+        return layout
+
+@app.callback(
     Output('period-picker', 'children'),
     [Input('product', 'value')])
 def display_period_selector(product_value):
