@@ -1383,7 +1383,7 @@ def update_frs_graph(selected_product,):
                     min=-30,
                     max=100,
                     step=5,
-                    # value=90
+                    value=100
                 ),
             ])
         ],
@@ -1420,7 +1420,9 @@ def update_frs_graph(all_data, input_value, g_l, min_max):
                 xaxis={'title':'Year'},
                 yaxis = {'title': '{} Degree Days'.format(input_value)},
                 title ='Days Where {} is {} {} Degrees F'.format(min_max, g_l, input_value),
-                plot_bgcolor = 'lightgray',
+                paper_bgcolor="#1f2630",
+                plot_bgcolor="#1f2630",
+                font=dict(color="#2cfec1"),
                 height = 500,
         )
     return {'data': data, 'layout': layout}
