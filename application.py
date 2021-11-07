@@ -1334,12 +1334,97 @@ def temp_layout(product):
                 ],
                     className='eight columns'
                 ),
+                html.Div([
+                    html.Div(id='frs-bar-controls')
+                ],
+                    className='four columns'
+                ),
             ],
                 className='row'
             ),
         ])
 
         return layout
+
+@app.callback(Output('frs-bar-controls', 'children'),
+             [Input('product', 'value')])
+def update_frs_graph(selected_product,):
+    if selected_product == 'frbg':
+        return html.Div([
+            dcc.Markdown('''
+            Select Max/Min and temperature to filter bar chart to show number of days 
+            per year above or below selected temperature.
+            '''),
+            html.Div([
+                html.Div(['Select Min/Max Temperature'], className='pretty_container'),
+                dcc.RadioItems(
+                    id='min-max-bar',
+                    options=[
+                        {'label':'Max', 'value':'TMAX'},
+                        {'label':'Min', 'value':'TMIN'},
+                    ],
+                    labelStyle={'display':'inline'},
+                    value='TMAX'   
+                ),
+                html.Div(['Select Greater/Less Than'], className='pretty_container'),
+                dcc.RadioItems(
+                    id='greater-less-bar',
+                    options=[
+                        {'label':'>=', 'value':'>='},
+                        {'label':'<', 'value':'<'},
+                    ],
+                    labelStyle={'display':'inline'},
+                    value='>='   
+                ),
+                html.Div(['Select Temperature'], className='pretty_container'),
+                dcc.Input(
+                    id='input-range',
+                    type='number',
+                    min=-30,
+                    max=100,
+                    step=5,
+                    # value=90
+                ),
+            ])
+        ],
+            className='round1'
+        ),
+
+
+@app.callback(Output('frs-bar', 'figure'),
+             [Input('all-data', 'data'),
+             Input('input-range', 'value'),
+             Input('greater-less-bar', 'value'),
+             Input('min-max-bar', 'value')])
+def update_frs_graph(all_data, input_value, g_l, min_max):
+    
+    all_data = pd.read_json(all_data)
+    all_data.index = pd.to_datetime(all_data.index, unit='ms')
+    # all_data['Date'] = pd.to_datetime(all_data['Date'], unit='ms')
+    # all_data.set_index(['Date'], inplace=True)
+    if g_l == '>=':
+        df = all_data.loc[all_data[min_max]>=input_value]
+    else:
+        df = all_data.loc[all_data[min_max]<input_value]
+    df_count = df.resample('Y').count()[min_max]
+    df = pd.DataFrame({'DATE':df_count.index, 'Selected Days':df_count.values})
+    
+    data = [
+        go.Bar(
+            y=df['Selected Days'],
+            x=df['DATE'],
+            marker={'color':'dodgerblue'}               
+        )
+    ]
+    layout = go.Layout(
+                xaxis={'title':'Year'},
+                yaxis = {'title': '{} Degree Days'.format(input_value)},
+                title ='Days Where {} is {} {} Degrees F'.format(min_max, g_l, input_value),
+                plot_bgcolor = 'lightgray',
+                height = 500,
+        )
+    return {'data': data, 'layout': layout}
+
 
 @app.callback(
     Output('period-picker', 'children'),
