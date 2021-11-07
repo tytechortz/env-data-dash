@@ -1503,33 +1503,21 @@ def update_fyma_graph(selected_param, df_5, max_trend, min_trend, all_data):
             name = 'trend',
             line = {'color':'red'}
         ))
-        # trace = [
-        #     go.Scatter(
-        #         y = all_max_rolling_mean,
-        #         x = all_max_rolling_mean.index,
-        #         name='Max Temp'
-        #     ),
-        #     go.Scatter(
-        #         y = all_max_temp_fit[0],
-        #         x = all_max_temp_fit.index,
-        #         name = 'trend',
-        #         line = {'color':'red'}
-        #     ),
-        # ]
+      
     elif selected_param == 'TMIN':
-        trace = [
-            go.Scatter(
-                y = all_min_rolling_mean,
-                x = all_min_rolling_mean.index,
-                name='Min Temp'
-            ),
-            go.Scatter(
-                y = all_min_temp_fit[0],
-                x = all_min_temp_fit.index,
-                name = 'trend',
-                line = {'color':'red'}
-            ),
-        ]
+        traces.append(go.Scatter(
+            y = all_min_rolling_mean,
+            x = all_min_rolling_mean.index,
+            name='Max Temp'
+        )),
+
+        traces.append(go.Scatter(
+            y = all_min_temp_fit[0],
+            x = all_min_temp_fit.index,
+            name = 'trend',
+            line = {'color':'red'}
+        ))
+    
     layout = go.Layout(
         xaxis = {'rangeslider': {'visible':True},},
         yaxis = {"title": 'Temperature F'},
