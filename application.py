@@ -24,6 +24,8 @@ import io
 today = time.strftime("%Y-%m-%d")
 current_year = datetime.now().year
 current_month = datetime.now().month
+startyr = 1950
+year_count = current_year-startyr
 # print(today)
 
 app = dash.Dash(name=__name__, 
@@ -1158,17 +1160,20 @@ def data(n):
 #############################################################
 
 @app.callback(
-    Output('all-data', 'data'),
+    [Output('all-data', 'data'),
+    Output('all-temps', 'data')],
     [Input('interval-component', 'n_intervals'),
     Input('product', 'value')])
 def get_temp_data(n, product):
-    df_all_temps = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate='+ today +'&units=standard')
+    df = pd.read_csv('https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=TMAX,TMIN&stations=USW00023062&startDate=1950-01-01&endDate='+ today +'&units=standard')
+    # print(df)
+    df_all_temps = df
     
     df_all_temps['DATE'] = pd.to_datetime(df_all_temps['DATE'])
     df_all_temps = df_all_temps.set_index('DATE')
     # print(df_all_temps)
 
-    return df_all_temps.to_json()
+    return df_all_temps.to_json(), df.to_json(date_format='iso')
 
 @app.callback(Output('rec-highs', 'data'),
              [Input('year', 'value'),
@@ -1346,6 +1351,33 @@ def temp_layout(product):
 
         return layout
 
+@app.callback(
+    Output('fyma-layout', 'children'),
+    Input('product', 'value'))
+def temp_layout(product):
+
+    # print(product)
+    if product == 'fyma-graph':
+
+        layout = html.Div([
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='fyma-graph')
+                ],
+                    className='eight columns'
+                ),
+                html.Div([
+                    html.Div(id='fyma-param-picker')
+                ],
+                    className='four columns'
+                ),
+            ],
+                className='row'
+            ),
+        ])
+
+        return layout
+
 @app.callback(Output('frs-bar-controls', 'children'),
              [Input('product', 'value')])
 def update_frs_graph(selected_product,):
@@ -1427,6 +1459,130 @@ def update_frs_graph(all_data, input_value, g_l, min_max):
         )
     return {'data': data, 'layout': layout}
 
+@app.callback(
+    Output('fyma-graph', 'figure'),
+    [Input('fyma-param', 'value'),
+    Input('df5', 'data'),
+    Input('max-trend', 'children'),
+    Input('min-trend', 'children'),
+    Input('all-data', 'data')])
+def update_fyma_graph(selected_param, df_5, max_trend, min_trend, all_data):
+    print(selected_param)
+    fyma_temps = pd.read_json(all_data)
+    fyma_temps.index = pd.to_datetime(fyma_temps.index, unit='ms')
+
+    df_5 = pd.read_json(df_5)
+    # print(df_5)
+    all_max_temp_fit = pd.DataFrame(max_trend)
+    print(all_max_temp_fit)
+    all_max_temp_fit.index = df_5.index
+    all_max_temp_fit.index = all_max_temp_fit.index.strftime("%Y-%m-%d")
+
+    all_min_temp_fit = pd.DataFrame(min_trend)
+    all_min_temp_fit.index = df_5.index
+    all_min_temp_fit.index = all_min_temp_fit.index.strftime("%Y-%m-%d")
+
+    all_max_rolling = fyma_temps['TMAX'].dropna().rolling(window=1825)
+    all_max_rolling_mean = all_max_rolling.mean()
+    print(all_max_rolling_mean)
+    all_min_rolling = fyma_temps['TMIN'].dropna().rolling(window=1825)
+    all_min_rolling_mean = all_min_rolling.mean()
+    
+    traces = []
+
+    if selected_param == 'TMAX':
+        traces.append(go.Scatter(
+            y = all_max_rolling_mean,
+            x = all_max_rolling_mean.index,
+            name='Max Temp'
+        )),
+
+        traces.append(go.Scatter(
+            y = all_max_temp_fit[0],
+            x = all_max_temp_fit.index,
+            name = 'trend',
+            line = {'color':'red'}
+        ))
+        # trace = [
+        #     go.Scatter(
+        #         y = all_max_rolling_mean,
+        #         x = all_max_rolling_mean.index,
+        #         name='Max Temp'
+        #     ),
+        #     go.Scatter(
+        #         y = all_max_temp_fit[0],
+        #         x = all_max_temp_fit.index,
+        #         name = 'trend',
+        #         line = {'color':'red'}
+        #     ),
+        # ]
+    elif selected_param == 'TMIN':
+        trace = [
+            go.Scatter(
+                y = all_min_rolling_mean,
+                x = all_min_rolling_mean.index,
+                name='Min Temp'
+            ),
+            go.Scatter(
+                y = all_min_temp_fit[0],
+                x = all_min_temp_fit.index,
+                name = 'trend',
+                line = {'color':'red'}
+            ),
+        ]
+    layout = go.Layout(
+        xaxis = {'rangeslider': {'visible':True},},
+        yaxis = {"title": 'Temperature F'},
+        title ='5 Year Rolling Mean {}'.format(selected_param),
+        plot_bgcolor = 'lightgray',
+        height = 500,
+    )
+    return {'data': traces, 'layout': layout}
+
+@app.callback(
+    Output('df5', 'data'),
+    [Input('all-temps', 'data'),
+    Input('product', 'value')])
+def clean_df5(all_data, product_value):
+    dr = pd.read_json(all_data)
+    # print(dr)
+    # dr.index = pd.to_datetime(dr.DATE)
+    dr['DATE'] = pd.to_datetime(dr['DATE'])
+    # print(dr)
+    dr = dr.set_index('DATE')
+    df_date_index = dr
+    # print(df_date_index)
+    df_ya_max = df_date_index.resample('Y').mean()
+    df5 = df_ya_max[:-1]
+    # print(df5)
+
+    return df5.to_json(date_format='iso')
+
+@app.callback(
+    Output('max-trend', 'children'),
+    [Input('df5', 'data'),
+    Input('product', 'value')])
+def all_max_trend(df_5, product_value):
+    
+    df5 = pd.read_json(df_5)
+    # print(df5)
+    # df5.index = df5.DATE
+    xi = arange(0,year_count)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,df5['TMAX'])
+
+    return (slope*xi+intercept)
+
+@app.callback(
+    Output('min-trend', 'children'),
+    [Input('df5', 'data'),
+    Input('product', 'value')])
+def all_min_trend(df_5, product_value):
+    
+    df5 = pd.read_json(df_5)
+    xi = arange(0,year_count)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xi,df5['TMIN'])
+    
+    return (slope*xi+intercept)
 
 @app.callback(
     Output('period-picker', 'children'),
@@ -1494,6 +1650,28 @@ def display_date_selector(product_value):
             value = 'TMAX',
                 labelStyle = {'display':'inline-block'}
         )
+
+@app.callback(
+    Output('fyma-param-picker', 'children'),
+    Input('product', 'value'))
+    # Input('year', 'value')])
+def display_fyma_param_selector(product_value):
+    # print(product_value)
+    # if product_value == 'climate-for-day':
+    return  html.Div([
+        html.P('Select Temp. Parameter'),  
+        dcc.RadioItems(
+            id='fyma-param',
+            options = [
+                {'label':'Max Temp', 'value':'TMAX'},
+                {'label':'Min Temp', 'value':'TMIN'},
+            ],
+            # value = 'TMAX',
+            labelStyle = {'display':'inline-block'}
+        )
+    ])
+                     
+            
 
 
 @app.callback(
@@ -1902,7 +2080,7 @@ def table_output(data, selected_date):
     Output('datatable-interactivity', 'children'),
     Input('selected-date', 'date'))
 def display_climate_table(date):
-    print(date)
+    # print(date)
     return dt.DataTable(id='datatable-interactivity',
     data=[{}], 
     columns=[{'id': 'TMAX', 'name': 'TMAX'}, {'id': 'TMIN', 'name': 'TMIN'}, {'id': 'DATE', 'name': 'DATE'}],
@@ -1954,7 +2132,7 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
     
     dr['AMAX'] = dr['TMAX'].mean()
     dr['AMIN'] = dr['TMIN'].mean()
-    print(dr)
+    # print(dr)
     xi = arange(0,len(dr['TMAX']))
     slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMAX'])
     max_trend = (slope*xi+intercept)

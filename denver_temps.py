@@ -83,6 +83,7 @@ def dt_App():
         html.Div(id='temp-graph-layout'),
         html.Div(id='climate-layout'),
         html.Div(id='frbg-layout'),
+        html.Div(id='fyma-layout'),
         # html.Div(id='date-picker'),
         # dcc.Graph(id='temp-graph'),
         dcc.Interval(
@@ -102,7 +103,11 @@ def dt_App():
         dcc.Store(id='d-max-min'),
         dcc.Store(id='layout'),
         dcc.Store(id='all-data'),
+        dcc.Store(id='all-temps'),
         dcc.Store(id='climate-data'),
+        dcc.Store(id='df5'),
+        dcc.Store(id='max-trend'),
+        dcc.Store(id='min-trend'),
 ])
 
 app.layout = dt_App
