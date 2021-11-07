@@ -1273,7 +1273,6 @@ def temp_layout(product):
     Input('product', 'value'))
 def temp_layout(product):
 
-    # print(product)
     if product == 'climate-for-day':
 
         layout = html.Div([
@@ -1312,16 +1311,7 @@ def temp_layout(product):
                 className='row'
             ),
             html.Div([
-                html.Div([
-                    html.Div('Maximum Temperatures', style={'text-align':'center', 'color':'red'})
-                ],
-                className='six columns'
-                ),
-                html.Div([
-                    html.Div('Minimum Temperatures', style={'text-align':'center', 'color':'aqua'})
-                ],
-                className='six columns'
-                ),
+                html.Div(id='daily-stats')
             ],
                 className='row'
             ),
@@ -1719,39 +1709,107 @@ def get_table_data(data, selected_date, product):
     # print(dr)
     return html.H4('Climate Data {}'.format(selected_date)), dr.to_json()
 
+@app.callback(
+    Output('daily-stats', 'children'),
+    [Input('all-data', 'data'),
+    Input('selected-date', 'date'),
+    Input('product', 'value')])
+def get_table_data(data, selected_date, product):
+    # print(selected_date)
+    dr = pd.read_json(data)
+    dr.index = pd.to_datetime(dr.index, unit='ms')
+    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    dr = dr.drop('STATION', axis=1)
+    dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
+
+    d_max_max = dr['TMAX'].max()
+    admaxh = dr['TMAX'].mean()
+    d_min_max = dr['TMAX'].min()
+    d_min_min = dr['TMIN'].min()
+    adminl = dr['TMIN'].mean()
+    d_max_min = dr['TMIN'].max()
+    # admaxh = dr['TMAX'].mean()
+    
+    return html.Div([
+        html.Div([
+            html.Div([
+                html.Div('Maximum Temperatures', style={'text-align':'center', 'color':'red'})
+            ],
+              className='six columns'
+            ),
+            html.Div([
+                html.Div('Minimum Temperatures', style={'text-align':'center', 'color':'aqua'})
+            ],
+              className='six columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.Div([
+                html.Div([
+                    html.Div('Maximum', style={'text-align':'center', 'color': 'red'}),
+                    html.Div('{}'.format(d_max_max), style={'text-align':'center'})
+                ],
+                    className='round1 two columns'
+                ),
+                html.Div([
+                    html.Div('Average', style={'text-align':'center', 'color': 'red'}),
+                    html.Div('{:.0f}'.format(admaxh), style={'text-align':'center'})
+                ],
+                    className='round1 two columns'
+                ),
+                html.Div([
+                    html.Div('Minimum', style={'text-align':'center', 'color': 'red'}),
+                    html.Div('{}'.format(d_min_max), style={'text-align':'center'})
+                ],
+                    className='round1 two columns'
+                ),
+                html.Div([
+                    html.Div('Maximum', style={'text-align':'center', 'color': 'blue'}),
+                    html.Div('{}'.format(d_min_min), style={'text-align':'center'})
+                ],
+                    className='round1 two columns'
+                ),
+                html.Div([
+                    html.Div('Average', style={'text-align':'center', 'color': 'blue'}),
+                    html.Div('{:.0f}'.format(adminl), style={'text-align':'center'})
+                ],
+                    className='round1 two columns'
+                ),
+                html.Div([
+                    html.Div('Minimum', style={'text-align':'center', 'color': 'blue'}),
+                    html.Div('{}'.format(d_max_min), style={'text-align':'center'})
+                ],
+                    className='round1 two columns'
+                ),
+            ],
+                className='pretty_container'
+            ),
+        ],
+            className='row'
+        ),
+    ])
+
 @app.callback([
     Output('datatable-interactivity', 'data'),
-    Output('datatable-interactivity', 'columns'),
-    Output('d-max-max', 'children'),
-    Output('avg-of-dly-highs', 'children'),
-    Output('d-min-max', 'children'),
-    Output('d-min-min', 'children'),
-    Output('avg-of-dly-lows', 'children'),
-    Output('d-max-min', 'children')],
+    Output('datatable-interactivity', 'columns')],
     [Input('climate-data', 'data'),
     Input('selected-date', 'date')])
 def table_output(data, selected_date):
     dr = pd.read_json(data)
     dr.index = pd.to_datetime(dr.index, unit='ms')
-    dr2 = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
-    dr2['DATE'] = pd.to_datetime(dr2.index).strftime("%Y-%m-%d")
-    dr2 = dr2.fillna(0)
+    dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    dr['DATE'] = pd.to_datetime(dr.index).strftime("%Y-%m-%d")
+    dr = dr.fillna(0)
     # print(dr2)
-    data = dr2.to_dict('records')
+    data = dr.to_dict('records')
     # print(data)
     columns=[
-        {"name": i, "id": i,"selectable": False} for i in dr2.columns
+        {"name": i, "id": i,"selectable": False} for i in dr.columns
     ]
 
-    d_max_max = dr['TMAX'].max()
-    avg_of_dly_highs = dr['TMAX'].mean()
-    d_min_max = dr['TMAX'].min()
-    d_min_min = dr['TMIN'].min()
-    avg_of_dly_lows = dr['TMIN'].mean()
-    d_max_min = dr['TMIN'].max()
-    # print(columns)
-
-    return data, columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min
+    return data, columns
 
 @app.callback(
     Output('datatable-interactivity', 'children'),
@@ -1806,9 +1864,10 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
     # dr['Date'] = pd.to_datetime(dr['Date'], unit='ms')
     # dr.set_index(['Date'], inplace=True)
     dr = dr[(dr.index.month == int(selected_date[5:7])) & (dr.index.day == int(selected_date[8:10]))]
+    
     dr['AMAX'] = dr['TMAX'].mean()
     dr['AMIN'] = dr['TMIN'].mean()
-    
+    print(dr)
     xi = arange(0,len(dr['TMAX']))
     slope, intercept, r_value, p_value, std_err = stats.linregress(xi,dr['TMAX'])
     max_trend = (slope*xi+intercept)
