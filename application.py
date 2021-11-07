@@ -1534,7 +1534,9 @@ def update_fyma_graph(selected_param, df_5, max_trend, min_trend, all_data):
         xaxis = {'rangeslider': {'visible':True},},
         yaxis = {"title": 'Temperature F'},
         title ='5 Year Rolling Mean {}'.format(selected_param),
-        plot_bgcolor = 'lightgray',
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
         height = 500,
     )
     return {'data': traces, 'layout': layout}
