@@ -58,10 +58,10 @@ navajo_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemI
 
 fg_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=337&before=' + today + '&after=1999-12-30&filename=Flaming%20Gorge%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1999-12-31%20-%202021-07-15)&order=ASC'
 
-# blue_mesa_data_raw = pd.read_csv(blue_mesa_data_url)
-# navajo_data_raw = pd.read_csv(navajo_data_url)
-# fg_data_raw = pd.read_csv(fg_data_url)
-# print(blue_mesa_data_raw)
+blue_mesa_data_raw = pd.read_csv(blue_mesa_data_url)
+navajo_data_raw = pd.read_csv(navajo_data_url)
+fg_data_raw = pd.read_csv(fg_data_url)
+
 
 
 
