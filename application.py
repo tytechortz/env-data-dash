@@ -23,6 +23,8 @@ import io
 
 
 today = time.strftime("%Y-%m-%d")
+yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
+two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
 current_year = datetime.now().year
 current_month = datetime.now().month
 startyr = 1950
@@ -2434,13 +2436,17 @@ def co2_graph(n):
     [Input('CO2-data', 'data')])
 def current_co2_stats(co2_data):
     df = pd.read_json(co2_data)
+    df['date'] = df.index.date
+    # print(df)
     current_co2 = df.loc[yesterday]
+    
+    
     if current_co2.empty:
         current_co2 = df.loc[two_days_ago]
-   
-    current_co2_value = current_co2.iloc[-1]
+
+    current_co2_value = current_co2.iloc[-1].value
     
-    current_co2_date = current_co2.name.strftime('%Y-%m-%d')
+    current_co2_date = current_co2.iloc[-1].date
   
     return html.Div([
         html.Div([
@@ -2513,10 +2519,25 @@ def co2_graph(co2_data, n):
         go.Scatter(
             y = df['value'],
             x = df.index,
-            mode = 'markers'
+            mode = 'markers',
+            marker=dict(color='red'),
         )
     ]
     layout = go.Layout(
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+        yaxis=dict(
+            showgrid = True,
+            zeroline = True,
+            showline = True,
+            gridcolor = '#bdbdbd',
+            gridwidth = 2,
+            zerolinecolor = '#969696',
+            zerolinewidth = 2,
+            linecolor = '#636363',
+            linewidth = 2,
+        ),
         height=500
     )
 
