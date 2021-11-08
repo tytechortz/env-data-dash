@@ -11,6 +11,7 @@ from colorado_river import river_App, capacities
 from upper_res import ur_App
 from drought_river import drought_river_App
 from denver_temps import dt_App
+from co_two import co2_App
 import pandas as pd
 from numpy import arange,array,ones
 from scipy import stats
@@ -2376,7 +2377,150 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
 
         # return dr.to_dict('records'), columns, d_max_max, avg_of_dly_highs, d_min_max, d_min_min, avg_of_dly_lows, d_max_min    
 
+######################################################### CO2
+########################################################
 
+@app.callback(
+    Output('CO2-data', 'data'),
+    [Input('interval-component', 'n_intervals')])
+def co2_graph(n):
+    old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[150])
+    
+
+    old_data = old_data.drop(['hour', 'longitude', 'latitude', 'elevation', 'intake_height', 'qcflag', 'nvalue', 'altitude', 'minute', 'second', 'site_code', 'value_std_dev'], axis=1)
+
+
+    old_data = old_data.iloc[501:]
+
+    old_data.index = pd.to_datetime(old_data[['year', 'month', 'day']])
+    old_data = old_data.drop(['year', 'month', 'day', 'time_decimal'], axis=1)
+    print(old_data)
+
+    new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
+    new_data['Date'] = pd.to_datetime(new_data['Date'])
+    new_data.index = new_data['Date']
+    new_data = new_data.drop(['month', 'week', 'Date'], axis=1)
+
+    new_data['value'] = new_data['day']
+    new_data = new_data.drop(['day'], axis=1)
+    new_data = new_data[datetime(2021, 1, 1):]
+    print(new_data)
+   
+    frames = [old_data, new_data]
+    co2_data = pd.concat(frames)
+    co2_data['value'] = co2_data['value'].replace(-999.99, np.nan)
+   
+    max_co2 = co2_data['value'].max()
+   
+    max_co2_date = co2_data['value'].idxmax().strftime('%Y-%m-%d')
+    
+    current_co2 = co2_data['value'].iloc[-1]
+    
+    current_co2_date = co2_data.index[-1].strftime('%Y-%m-%d')
+    
+    monthly_avg = co2_data.groupby([co2_data.index.year, co2_data.index.month]).mean()
+
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    this_month_avg = monthly_avg.loc[current_year, current_month].value
+    last_year_avg = monthly_avg.loc[current_year-1, current_month].value
+    print(co2_data)
+    print(co2_data.columns)
+   
+    return co2_data.to_json()
+
+@app.callback(
+    Output('current-co2-layout', 'children'),
+    [Input('CO2-data', 'data')])
+def current_co2_stats(co2_data):
+    df = pd.read_json(co2_data)
+    current_co2 = df.loc[yesterday]
+    if current_co2.empty:
+        current_co2 = df.loc[two_days_ago]
+   
+    current_co2_value = current_co2.iloc[-1]
+    
+    current_co2_date = current_co2.name.strftime('%Y-%m-%d')
+  
+    return html.Div([
+        html.Div([
+            html.Div('Current CO2 Value (ppm)', style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+        html.Div([
+            html.Div('{}'.format(current_co2_value), style={'text-align':'center'}),
+            html.Div('{}'.format(current_co2_date), style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+    ])
+
+@app.callback(
+    Output('avg-co2-layout', 'children'),
+    [Input('CO2-data', 'data'),
+    Input('interval-component', 'n_intervals')])
+def avg_co2_stats(co2_data, n):
+    df = pd.read_json(co2_data)
+    monthly_avg = df.groupby([df.index.year, df.index.month]).mean()
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    this_month_avg = monthly_avg.loc[current_year, current_month].value
+    last_year_avg = monthly_avg.loc[current_year-1, current_month].value
+
+    return html.Div([
+        html.Div([
+            html.Div('Avg For Month (ppm)', style={'text-align':'center'}),
+            html.Div('{:.2f}'.format(this_month_avg), style={'text-align':'center'}), 
+            html.Div('Last Year', style={'text-align':'center'}),
+            html.Div('{:.2f}'.format(last_year_avg), style={'text-align':'center'}), 
+        ],
+            className='round1'
+        ),
+    ])
+
+@app.callback(
+    Output('max-co2-layout', 'children'),
+    [Input('CO2-data', 'data'),
+    Input('interval-component', 'n_intervals')])
+def max_co2_stats(co2_data, n):
+    df = pd.read_json(co2_data)
+    max_co2 = df['value'].max()
+    max_co2_date = df['value'].idxmax().strftime('%Y-%m-%d')
+
+    return html.Div([
+        html.Div([
+            html.Div('Maximum CO2 Value (ppm)', style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+        html.Div([
+            html.Div('{}'.format(max_co2), style={'text-align':'center'}),
+            html.Div('{}'.format(max_co2_date), style={'text-align':'center'}) 
+        ],
+            className='round1'
+        ),
+    ])
+
+@app.callback(
+    Output('co2-levels', 'figure'),
+    [Input('CO2-data', 'data'),
+    Input('interval-component', 'n_intervals')])
+def co2_graph(co2_data, n):
+    df = pd.read_json(co2_data)
+
+    data = [
+        go.Scatter(
+            y = df['value'],
+            x = df.index,
+            mode = 'markers'
+        )
+    ]
+    layout = go.Layout(
+        height=500
+    )
+
+    return {'data': data, 'layout': layout}
 
 
 
