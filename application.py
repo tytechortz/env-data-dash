@@ -2433,8 +2433,9 @@ def co2_graph(n):
 
 @app.callback(
     Output('current-co2-layout', 'children'),
-    [Input('CO2-data', 'data')])
-def current_co2_stats(co2_data):
+    [Input('CO2-data', 'data'),
+    Input('interval-component', 'n_intervals')])
+def current_co2_stats(co2_data, n):
     df = pd.read_json(co2_data)
     df['date'] = df.index.date
     # print(df)
