@@ -2381,51 +2381,60 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
 
 ######################################################### CO2
 ########################################################
-@app.callback(
-    Output('co2-month-selector', 'children'),
-    Input('interval-component', 'n_intervals'))
-def co2_month(n):
-    print(n)
-    return html.Div([
-        dcc.Dropdown(
-            id = 'co2-month',
-            options = [
-                {'label': 'JAN', 'value': 1},
-                {'label': 'FEB', 'value': 2},
-                {'label': 'MAR', 'value': 3},
-                {'label': 'APR', 'value': 4},
-                {'label': 'MAY', 'value': 5},
-                {'label': 'JUN', 'value': 6},
-                {'label': 'JUL', 'value': 7},
-                {'label': 'AUG', 'value': 8},
-                {'label': 'SEP', 'value': 9},
-                {'label': 'OCT', 'value': 10},
-                {'label': 'NOV', 'value': 11},
-                {'label': 'DEC', 'value': 12},
-            ],
-            value = 1,
-        ),
-    ])
+# @app.callback(
+#     Output('co2-month-selector', 'children'),
+#     Input('CO2-interval-component', 'n_intervals'))
+# def co2_month(n):
+#     # print(n)
+#     return html.Div([
+#         dcc.Dropdown(
+#             id = 'CO2-month',
+#             options = [
+#                 {'label': 'JAN', 'value': 1},
+#                 {'label': 'FEB', 'value': 2},
+#                 {'label': 'MAR', 'value': 3},
+#                 {'label': 'APR', 'value': 4},
+#                 {'label': 'MAY', 'value': 5},
+#                 {'label': 'JUN', 'value': 6},
+#                 {'label': 'JUL', 'value': 7},
+#                 {'label': 'AUG', 'value': 8},
+#                 {'label': 'SEP', 'value': 9},
+#                 {'label': 'OCT', 'value': 10},
+#                 {'label': 'NOV', 'value': 11},
+#                 {'label': 'DEC', 'value': 12},
+#             ],
+#             value = 1,
+#         ),
+#     ])
 
 @app.callback(
     Output('CO2-month-data', 'data'),
-    Input('interval-component', 'n_intervals'))
-def get_co2_month(n):
+    # [Input('interval-component', 'n_intervals'),
+    [Input('CO2-data', 'data'),
+    Input('CO2-month', 'value')])
+def get_co2_month(CO2_data, CO2_month):
+    
     now=datetime.now()
     today_month=now.month
     print(today_month)
+    df = pd.read_json(CO2_data)
+    # print(df)
+    # print(type(df.index))
+    # print(CO2_month)
+    filtered_df = df[df.index.month == CO2_month]
+    print(filtered_df)
     # min_date_allowed=date(1974, 5, 17)
     # max_date_allowed=date(today)
     # date=today
     # display_format='MMM MMMM'
-    return today_month
+    return filtered_df.to_json()
 
 @app.callback(
     Output('CO2-data', 'data'),
-    [Input('interval-component', 'n_intervals')])
+    [Input('CO2-interval-component', 'n_intervals')])
 def co2_graph(n):
     old_data = pd.read_csv('ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_DailyData.txt', delim_whitespace=True, header=[150])
-    
+    print(old_data)
 
     old_data = old_data.drop(['hour', 'longitude', 'latitude', 'elevation', 'intake_height', 'qcflag', 'nvalue', 'altitude', 'minute', 'second', 'site_code', 'value_std_dev'], axis=1)
 
@@ -2464,7 +2473,7 @@ def co2_graph(n):
     current_month = datetime.now().month
     this_month_avg = monthly_avg.loc[current_year, current_month].value
     last_year_avg = monthly_avg.loc[current_year-1, current_month].value
-    # print(co2_data)
+    print(co2_data)
     # print(co2_data.columns)
    
     return co2_data.to_json()
@@ -2472,7 +2481,7 @@ def co2_graph(n):
 @app.callback(
     Output('current-co2-layout', 'children'),
     [Input('CO2-data', 'data'),
-    Input('interval-component', 'n_intervals')])
+    Input('CO2-interval-component', 'n_intervals')])
 def current_co2_stats(co2_data, n):
     yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
     df = pd.read_json(co2_data)
@@ -2505,7 +2514,7 @@ def current_co2_stats(co2_data, n):
 @app.callback(
     Output('avg-co2-layout', 'children'),
     [Input('CO2-data', 'data'),
-    Input('interval-component', 'n_intervals')])
+    Input('CO2-interval-component', 'n_intervals')])
 def avg_co2_stats(co2_data, n):
     df = pd.read_json(co2_data)
     # print(df)
@@ -2529,7 +2538,7 @@ def avg_co2_stats(co2_data, n):
 @app.callback(
     Output('max-co2-layout', 'children'),
     [Input('CO2-data', 'data'),
-    Input('interval-component', 'n_intervals')])
+    Input('CO2-interval-component', 'n_intervals')])
 def max_co2_stats(co2_data, n):
     df = pd.read_json(co2_data)
     max_co2 = df['value'].max()
@@ -2550,9 +2559,47 @@ def max_co2_stats(co2_data, n):
     ])
 
 @app.callback(
+    Output('monthly-co2-levels', 'figure'),
+    Input('CO2-month-data', 'data'))
+    # Input('CO2-month', 'value')])
+def co2_month_graph(data):
+    # print(n)
+    df = pd.read_json(data)
+    df = df.groupby(df.index.year).mean()
+
+    data = [
+        go.Scatter(
+            y = df['value'],
+            x = df.index,
+            mode = 'markers',
+            marker=dict(color='red'),
+        )
+    ]
+    layout = go.Layout(
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+        yaxis=dict(
+            showgrid = True,
+            zeroline = True,
+            showline = True,
+            gridcolor = '#bdbdbd',
+            gridwidth = 2,
+            zerolinecolor = '#969696',
+            zerolinewidth = 2,
+            linecolor = '#636363',
+            linewidth = 2,
+        ),
+        height=500
+    )
+
+    return {'data': data, 'layout': layout}
+
+
+@app.callback(
     Output('co2-levels', 'figure'),
     [Input('CO2-data', 'data'),
-    Input('interval-component', 'n_intervals')])
+    Input('CO2-interval-component', 'n_intervals')])
 def co2_graph(co2_data, n):
     df = pd.read_json(co2_data)
 
