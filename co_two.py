@@ -101,7 +101,7 @@ def co2_App():
             html.Div([
                 dcc.Interval(
                     id='CO2-interval-component',
-                    interval=60000,
+                    interval=3000000,
                     n_intervals=0
                 ),
             ]),

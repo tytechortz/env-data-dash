@@ -2560,19 +2560,28 @@ def max_co2_stats(co2_data, n):
 
 @app.callback(
     Output('monthly-co2-levels', 'figure'),
-    Input('CO2-month-data', 'data'))
-    # Input('CO2-month', 'value')])
-def co2_month_graph(data):
+    [Input('CO2-month-data', 'data'),
+    Input('CO2-month', 'value')])
+def co2_month_graph(data, month):
     # print(n)
     df = pd.read_json(data)
-    df = df.groupby(df.index.year).mean()
+    # df = df.groupby(df.index.year).mean()
+    df_21 = df[(df.index.month == month) & (df.index.year == 2021)]
+    print(df_21)
+    df_20 = df[(df.index.month == month) & (df.index.year == 2020)]
 
     data = [
         go.Scatter(
-            y = df['value'],
-            x = df.index,
+            y = df_21['value'],
+            x = df_21.index,
             mode = 'markers',
             marker=dict(color='red'),
+        ),
+        go.Scatter(
+            y = df_20['value'],
+            x = df_21.index,
+            mode = 'markers',
+            marker=dict(color='blue'),
         )
     ]
     layout = go.Layout(
