@@ -61,7 +61,11 @@ def co2_App():
                 className='row'
             ),
             html.Div([
-                html.Div(id='co2-month-selector')
+                html.Div([
+                    html.Div(id='co2-month-selector'),
+                ],
+                    className='two columns'
+                ),
             ],
                 className='row'
             ),
