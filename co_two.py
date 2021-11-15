@@ -61,14 +61,32 @@ def co2_App():
                 className='row'
             ),
             html.Div([
+                html.Div(id='co2-month-selector')
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div([
+                    dcc.Graph(
+                        id='monthly-co2-levels',
+                        # figure=fig
+                    ),
+                ],
+                    className='nine columns'
+                ),
+            ],
+                className='row'
+            ),
+            html.Div([
                 dcc.Interval(
                     id='interval-component',
-                    interval=600000,
+                    interval=60000,
                     n_intervals=0
                 ),
             ]),
         ]),
         dcc.Store(id='CO2-data'),
+        dcc.Store(id='CO2-month-data'),
     ])
 
 

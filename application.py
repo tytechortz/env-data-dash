@@ -23,7 +23,7 @@ import io
 
 
 today = time.strftime("%Y-%m-%d")
-yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
+# yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
 current_year = datetime.now().year
 current_month = datetime.now().month
@@ -55,7 +55,7 @@ mead_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=
 
 blue_mesa_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=76&before=' + today + '&after=1999-12-30&filename=Blue%20Mesa%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(2000-01-01%20-%202021-07-14)&order=ASC'
 
-# https://data.usbr.gov/rise/api/result/download?type=csv&itemId=76&before=2021-10-25&after=1999-12-30&filename=Blue%20Mesa%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(2000-01-01%20-%202021-07-14)&order=ASC
+# https://data.usbr.gov/rise/api/result/download?type=csv&itemId=76&before=2021-11-15&after=1999-12-30&filename=Blue%20Mesa%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(2000-01-01%20-%202021-07-14)&order=ASC
 
 navajo_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=613&before=' + today + '&after=1999-12-30&filename=Navajo%20Reservoir%20and%20Dam%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1999-12-31%20-%202021-07-14)&order=ASC'
 
@@ -2381,6 +2381,44 @@ def climate_day_bar(selected_date, all_data, selected_param, selected_product):
 
 ######################################################### CO2
 ########################################################
+@app.callback(
+    Output('co2-month-selector', 'children'),
+    Input('interval-component', 'n_intervals'))
+def co2_month(n):
+    print(n)
+    return html.Div([
+        dcc.Dropdown(
+            id = 'co2-month',
+            options = [
+                {'label': 'JAN', 'value': 1},
+                {'label': 'FEB', 'value': 2},
+                {'label': 'MAR', 'value': 3},
+                {'label': 'APR', 'value': 4},
+                {'label': 'MAY', 'value': 5},
+                {'label': 'JUN', 'value': 6},
+                {'label': 'JUL', 'value': 7},
+                {'label': 'AUG', 'value': 8},
+                {'label': 'SEP', 'value': 9},
+                {'label': 'OCT', 'value': 10},
+                {'label': 'NOV', 'value': 11},
+                {'label': 'DEC', 'value': 12},
+            ],
+            value = 1,
+        ),
+    ])
+
+@app.callback(
+    Output('CO2-month-data', 'data'),
+    Input('interval-component', 'n_intervals'))
+def get_co2_month(n):
+    now=datetime.now()
+    today_month=now.month
+    print(today_month)
+    # min_date_allowed=date(1974, 5, 17)
+    # max_date_allowed=date(today)
+    # date=today
+    # display_format='MMM MMMM'
+    return today_month
 
 @app.callback(
     Output('CO2-data', 'data'),
@@ -2396,7 +2434,7 @@ def co2_graph(n):
 
     old_data.index = pd.to_datetime(old_data[['year', 'month', 'day']])
     old_data = old_data.drop(['year', 'month', 'day', 'time_decimal'], axis=1)
-    print(old_data)
+    # print(old_data)
 
     new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
     new_data['Date'] = pd.to_datetime(new_data['Date'])
@@ -2406,7 +2444,7 @@ def co2_graph(n):
     new_data['value'] = new_data['day']
     new_data = new_data.drop(['day'], axis=1)
     new_data = new_data[datetime(2021, 1, 1):]
-    print(new_data)
+    # print(new_data)
    
     frames = [old_data, new_data]
     co2_data = pd.concat(frames)
@@ -2426,8 +2464,8 @@ def co2_graph(n):
     current_month = datetime.now().month
     this_month_avg = monthly_avg.loc[current_year, current_month].value
     last_year_avg = monthly_avg.loc[current_year-1, current_month].value
-    print(co2_data)
-    print(co2_data.columns)
+    # print(co2_data)
+    # print(co2_data.columns)
    
     return co2_data.to_json()
 
@@ -2436,6 +2474,7 @@ def co2_graph(n):
     [Input('CO2-data', 'data'),
     Input('interval-component', 'n_intervals')])
 def current_co2_stats(co2_data, n):
+    yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
     df = pd.read_json(co2_data)
     df['date'] = df.index.date
     # print(df)
@@ -2469,6 +2508,7 @@ def current_co2_stats(co2_data, n):
     Input('interval-component', 'n_intervals')])
 def avg_co2_stats(co2_data, n):
     df = pd.read_json(co2_data)
+    # print(df)
     monthly_avg = df.groupby([df.index.year, df.index.month]).mean()
     current_year = datetime.now().year
     current_month = datetime.now().month
