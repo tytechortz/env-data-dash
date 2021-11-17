@@ -2662,11 +2662,6 @@ def ice_graph_layout(product):
                 ],
                     className='two columns'
                 ),
-                html.Div([
-                    html.Div(id='year-selector'),
-                ],
-                    className='two columns'
-                ),
             ],
                 className='row'
             ),
@@ -2675,6 +2670,11 @@ def ice_graph_layout(product):
                     dcc.Graph(id='ice-extent'),
                 ],
                     className='eight columns'
+                ),
+                html.Div([
+                    html.Div(id='year-selector'),
+                ],
+                    className='two columns'
                 ),
             ],
                 className='row'
