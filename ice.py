@@ -14,7 +14,24 @@ def get_ice_header():
         ],
             className='row'
         ),
-        html.Div(id='date-title'),
+        html.Div([
+            html.H6(
+                '2006-Present',
+                className='twelve columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6(
+                'Data From National Snow and Ice Data Center',
+                className='twelve columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
     ])
 
     return header
@@ -38,6 +55,28 @@ def get_nav_bar():
             style = {'background-color' : 'dark-green',
                     'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
         ),
+        html.Div([
+            html.Div([
+                dcc.RadioItems(
+                    id='product',
+                    options=[
+                        {'label':'Ice Exent By Year', 'value':'years-graph'},
+                        {'label':'Avg Monthy Extent', 'value':'monthly-bar'},
+                        {'label':'Extent On Current Date', 'value':'extent-date'},
+                        {'label':'Extent Rankings', 'value':'extent-stats'},
+                        {'label':'1 Year Moving Avg', 'value':'moving-avg'},
+                    ],
+                    # value='temp-graph',
+                    labelStyle={'display': 'inline'},
+                    ),
+            ],
+                className='twelve columns'
+            ),
+        ],
+            className = 'row',
+                style = {'background-color' : 'dark-green',
+                        'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
+        ),
     ])
 
     return navbar
@@ -50,29 +89,7 @@ def ice_App():
         get_nav_bar(),
         get_emptyrow(),
         html.Div([
-            html.H2(
-                'Arctic Sea Ice Extent',
-                className='twelve columns',
-                style={'text-align': 'center'}
-            ),
-        ],
-            className='row'
-        ),
-        html.Div([
-            html.H6(
-                '2006-Present',
-                className='twelve columns',
-                style={'text-align': 'center'}
-            ),
-        ],
-            className='row'
-        ),
-        html.Div([
-            html.H6(
-                'Data From National Snow and Ice Data Center',
-                className='twelve columns',
-                style={'text-align': 'center'}
-            ),
+
         ],
             className='row'
         ),
