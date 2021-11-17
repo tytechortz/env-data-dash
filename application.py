@@ -2573,13 +2573,13 @@ def co2_month_graph(data, month):
     data = [
         go.Scatter(
             y = df_21['value'],
-            x = df_21.index,
+            x = df_20.index,
             mode = 'markers',
             marker=dict(color='red'),
         ),
         go.Scatter(
             y = df_20['value'],
-            x = df_21.index,
+            x = df_20.index,
             mode = 'markers',
             marker=dict(color='blue'),
         )
@@ -2639,6 +2639,13 @@ def co2_graph(co2_data, n):
     )
 
     return {'data': data, 'layout': layout}
+
+
+#################################################
+# ICE
+#################################################
+
+
 
 
 
