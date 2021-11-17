@@ -2788,7 +2788,7 @@ def update_figure(selected_sea, selected_year, df_fdta):
         'layout': go.Layout(
                 title = '{} Ice Extent'.format(selected_sea),
                 xaxis = {'title': 'Day', 'range': value_range},
-                yaxis = {'title': 'Ice extent (km2)'},
+                yaxis = {'title': 'Ice extent (km2)', 'showgrid': True, 'gridcolor': '#bdbdbd', 'gridwidth': 2},
                 hovermode='closest',
                 paper_bgcolor="#1f2630",
                 plot_bgcolor="#1f2630",
