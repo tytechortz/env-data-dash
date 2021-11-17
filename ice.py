@@ -49,6 +49,33 @@ def ice_App():
         get_ice_header(),
         get_nav_bar(),
         get_emptyrow(),
+        html.Div([
+            html.H2(
+                'Arctic Sea Ice Extent',
+                className='twelve columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6(
+                '2006-Present',
+                className='twelve columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6(
+                'Data From National Snow and Ice Data Center',
+                className='twelve columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
     ])
 
 app.layout = ice_App
