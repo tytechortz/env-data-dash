@@ -88,11 +88,16 @@ def ice_App():
         get_ice_header(),
         get_nav_bar(),
         get_emptyrow(),
-        html.Div([
+        html.Div(id='ice-graph-layout'),
 
-        ],
-            className='row'
+        dcc.Interval(
+            id='ice-interval-component',
+            interval=500*1000, # in milliseconds
+            n_intervals=0
         ),
+
+        dcc.Store(id='ice-data'),
+        dcc.Store(id='sea-options'),
     ])
 
 app.layout = ice_App

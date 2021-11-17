@@ -1179,9 +1179,10 @@ def get_temp_data(n, product):
 
     return df_all_temps.to_json(), df.to_json(date_format='iso')
 
-@app.callback(Output('rec-highs', 'data'),
-             [Input('year', 'value'),
-             Input('all-data', 'data')])
+@app.callback(
+    Output('rec-highs', 'data'),
+    [Input('year', 'value'),
+    Input('all-data', 'data')])
 def rec_high_temps(selected_year, temp_data):
     df = pd.read_json(temp_data)
     # print(df)
@@ -1202,9 +1203,10 @@ def rec_high_temps(selected_year, temp_data):
         rec_highs = df_rec_highs.drop(df_rec_highs.index[59])
     return rec_highs.to_json()
 
-@app.callback(Output('rec-lows', 'data'),
-             [Input('year', 'value'),
-             Input('all-data', 'data')])
+@app.callback(
+    Output('rec-lows', 'data'),
+    [Input('year', 'value'),
+    Input('all-data', 'data')])
 def rec_low_temps(selected_year, temp_data):
     df = pd.read_json(temp_data)
     # df['DATE'] = pd.to_datetime(df['DATE'])
@@ -2646,10 +2648,67 @@ def co2_graph(co2_data, n):
 # ICE
 #################################################
 
+@app.callback(
+    Output('ice-graph-layout', 'children'),
+    Input('product', 'value'))
+def ice_graph_layout(product):
+    print(product)
+    if product == 'years-graph':
+        return html.Div([
+            html.Div([
+                html.Div([
+                    html.Div(id='sea-selector'),
+                ],
+                    className='two columns'
+                ),
+            ],
+                className='row'
+            ),
+        ])
 
+@app.callback(
+    Output('sea-selector', 'children'),
+    [Input('product', 'value'),
+    Input('sea-options', 'data')])
+def display_sea_selector(product_value, sea_options):
+    # sea_options = pd.read_json(sea_options)
+    
+    if product_value == 'years-graph' or product_value == 'extent-date' or product_value == 'extent-stats' or product_value == 'moving-avg':
+        return html.P('Select Sea', style={'text-align': 'center'}) , html.Div([
+            dcc.Dropdown(
+                id='selected-sea',
+                options=sea_options,
+                value='Total Arctic Sea'      
+            ),
+        ],
+            className='pretty_container'
+        ),
 
+@app.callback(
+    Output('ice-data', 'data'),
+    Input('ice-interval-component', 'n_intervals'))
+def get_ice_data(n):
+    df = pd.read_csv('ftp://sidads.colorado.edu/DATASETS/NOAA/G02186/masie_4km_allyears_extent_sqkm.csv', skiprows=1)
 
+    # Format date and set indext to date
+    df['yyyyddd'] = pd.to_datetime(df['yyyyddd'], format='%Y%j')
+    df.set_index('yyyyddd', inplace=True)
+    df.columns = ['Total Arctic Sea', 'Beaufort Sea', 'Chukchi Sea', 'East Siberian Sea', 'Laptev Sea', 'Kara Sea',\
+        'Barents Sea', 'Greenland Sea', 'Bafin Bay Gulf of St. Lawrence', 'Canadian Archipelago', 'Hudson Bay', 'Central Arctic',\
+            'Bering Sea', 'Baltic Sea', 'Sea of Okhotsk', 'Yellow Sea', 'Cook Inlet']
 
+    return df.to_json()
+
+@app.callback(
+    Output('sea-options', 'data'),
+    Input('ice-data', 'data'))
+def get_sea_options(data):
+    df = pd.read_json(data)
+    sea_options = []
+    for sea in df.columns.unique():
+        sea_options.append({'label':sea, 'value':sea})
+
+    return sea_options
 
 if __name__ == '__main__':
     app.run_server(port=8050, debug=True)
