@@ -2757,7 +2757,7 @@ def display_year_selector(product_value, year_options):
                 dcc.Checklist(
                 id='selected-years',
                 options=year_options,
-                # value=2019       
+                value=[2021]       
                 )
             ],
                 className='pretty_container'
