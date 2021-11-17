@@ -6,6 +6,22 @@ from colorado_river import get_river_header, get_emptyrow
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
+month_options = [
+{'label':'JAN', 'value':1},
+{'label':'FEB', 'value':2},
+{'label':'MAR', 'value':3},
+{'label':'APR', 'value':4},
+{'label':'MAY', 'value':5},
+{'label':'JUN', 'value':6},
+{'label':'JUL', 'value':7},
+{'label':'AUG', 'value':8},
+{'label':'SEP', 'value':9},
+{'label':'OCT', 'value':10},
+{'label':'NOV', 'value':11},
+{'label':'DEC', 'value':12}
+]
+
+
 def get_ice_header():
 
     header = html.Div([
@@ -98,6 +114,8 @@ def ice_App():
 
         dcc.Store(id='ice-data'),
         dcc.Store(id='sea-options'),
+        dcc.Store(id='fdta'),
+        dcc.Store(id='year-options'),
     ])
 
 app.layout = ice_App

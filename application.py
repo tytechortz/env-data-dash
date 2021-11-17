@@ -12,7 +12,7 @@ from upper_res import ur_App
 from drought_river import drought_river_App
 from denver_temps import dt_App
 from co_two import co2_App
-from ice import ice_App
+from ice import ice_App, month_options
 import pandas as pd
 from numpy import arange,array,ones
 from scipy import stats
@@ -31,6 +31,7 @@ current_month = datetime.now().month
 startyr = 1950
 year_count = current_year-startyr
 # print(today)
+value_range = [0, 365]
 
 app = dash.Dash(name=__name__, 
                 title="Environmental Data Dashboard",
@@ -2661,6 +2662,20 @@ def ice_graph_layout(product):
                 ],
                     className='two columns'
                 ),
+                html.Div([
+                    html.Div(id='year-selector'),
+                ],
+                    className='two columns'
+                ),
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='ice-extent'),
+                ],
+                    className='eight columns'
+                ),
             ],
                 className='row'
             ),
@@ -2700,6 +2715,15 @@ def get_ice_data(n):
     return df.to_json()
 
 @app.callback(
+    Output('fdta', 'data'),
+    Input('ice-data', 'data'))
+def get_ice_data(data):
+    df = pd.read_json(data)
+    df_fdta = df.rolling(window=5).mean()
+
+    return df.to_json()
+
+@app.callback(
     Output('sea-options', 'data'),
     Input('ice-data', 'data'))
 def get_sea_options(data):
@@ -2709,6 +2733,65 @@ def get_sea_options(data):
         sea_options.append({'label':sea, 'value':sea})
 
     return sea_options
+
+@app.callback(
+    Output('year-options', 'data'),
+    Input('ice-data', 'data'))
+def get_sea_options(data):
+    df = pd.read_json(data)
+    year_options = []
+    for YEAR in df.index.year.unique():
+        year_options.append({'label':(YEAR), 'value':YEAR})
+
+    return year_options
+
+
+@app.callback(
+    Output('year-selector', 'children'),
+    [Input('product', 'value'),
+    Input('year-options', 'data')])
+def display_year_selector(product_value, year_options):
+    if product_value == 'years-graph':
+        return html.P('Select Years') , html.Div([
+                html.Div([
+                dcc.Checklist(
+                id='selected-years',
+                options=year_options,
+                # value=2019       
+                )
+            ],
+                className='pretty_container'
+            ),
+        ],
+         className='twelve columns'
+        ),
+
+@app.callback(
+    Output('ice-extent', 'figure'),
+    [Input('selected-sea', 'value'),
+    Input('selected-years', 'value'),
+    Input('fdta', 'data')])
+def update_figure(selected_sea, selected_year, df_fdta):
+    print(selected_year)
+    traces = []
+    df_fdta = pd.read_json(df_fdta)
+    print(df_fdta)
+    for x in selected_year:
+        sorted_daily_values=df_fdta[df_fdta.index.year == x]
+        traces.append(go.Scatter(
+            y=sorted_daily_values[selected_sea],
+            mode='lines',
+            name=x
+        ))
+    return {
+        'data': traces,
+        'layout': go.Layout(
+                title = '{} Ice Extent'.format(selected_sea),
+                xaxis = {'title': 'Day', 'range': value_range},
+                yaxis = {'title': 'Ice extent (km2)'},
+                hovermode='closest',
+                )  
+    }
 
 if __name__ == '__main__':
     app.run_server(port=8050, debug=True)
