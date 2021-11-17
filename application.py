@@ -2790,6 +2790,9 @@ def update_figure(selected_sea, selected_year, df_fdta):
                 xaxis = {'title': 'Day', 'range': value_range},
                 yaxis = {'title': 'Ice extent (km2)'},
                 hovermode='closest',
+                paper_bgcolor="#1f2630",
+                plot_bgcolor="#1f2630",
+                font=dict(color="#2cfec1"),
                 )  
     }
 
