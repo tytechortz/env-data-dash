@@ -12,6 +12,7 @@ from upper_res import ur_App
 from drought_river import drought_river_App
 from denver_temps import dt_App
 from co_two import co2_App
+from ice import ice_App
 import pandas as pd
 from numpy import arange,array,ones
 from scipy import stats
