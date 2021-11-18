@@ -2632,10 +2632,12 @@ def co2_graph(co2_data, n):
         )
     ]
     layout = go.Layout(
+        title = 'Full CO2 Record, 1974-Present',
         paper_bgcolor="#1f2630",
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
         yaxis=dict(
+            title = 'CO2 PPM',
             showgrid = True,
             zeroline = True,
             showline = True,
@@ -2645,6 +2647,9 @@ def co2_graph(co2_data, n):
             zerolinewidth = 2,
             linecolor = '#636363',
             linewidth = 2,
+        ),
+        xaxis=dict(
+            title = 'Date'
         ),
         height=500
     )
