@@ -2578,21 +2578,25 @@ def co2_month_graph(data, month):
         go.Scatter(
             y = df_21['value'],
             x = df_20.index,
+            name = '2021',
             mode = 'markers',
             marker=dict(color='red'),
         ),
         go.Scatter(
             y = df_20['value'],
             x = df_20.index,
+            name = '2020',
             mode = 'markers',
             marker=dict(color='blue'),
         )
     ]
     layout = go.Layout(
+        title = 'Daily CO2 Measurements',
         paper_bgcolor="#1f2630",
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
         yaxis=dict(
+            title = 'CO2 PPM',
             showgrid = True,
             zeroline = True,
             showline = True,
@@ -2602,6 +2606,9 @@ def co2_month_graph(data, month):
             zerolinewidth = 2,
             linecolor = '#636363',
             linewidth = 2,
+        ),
+        xaxis=dict(
+            title = 'Date'
         ),
         height=500
     )
@@ -2757,7 +2764,7 @@ def display_year_selector(product_value, year_options):
                 dcc.Checklist(
                 id='selected-years',
                 options=year_options,
-                value=[2021]       
+                value=[2012, 2021]       
                 )
             ],
                 className='pretty_container'

@@ -62,6 +62,11 @@ def co2_App():
             ),
             html.Div([
                 html.Div([
+                    html.H6('Select month to view data for last 2 years for selected month.')
+                    ],
+                        className='row'
+                    ),
+                html.Div([
                     dcc.Dropdown(
                         id = 'CO2-month',
                         options = [
@@ -78,7 +83,7 @@ def co2_App():
                             {'label': 'NOV', 'value': 11},
                             {'label': 'DEC', 'value': 12},
                         ],
-                        value = 1,
+                        value = 11,
                     )
                 ],
                     className='two columns'
