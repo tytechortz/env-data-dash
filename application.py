@@ -2567,7 +2567,16 @@ def max_co2_stats(co2_data, n):
     [Input('CO2-data', 'data'),
     Input('CO2-interval-component', 'n_intervals')])
 def get_monthly_co2_stats(data, n):
+    yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
+
     df = pd.read_json(data)
+    df['date'] = df.index.date
+    current_co2 = df.loc[yesterday]
+    if current_co2.empty:
+        current_co2 = df.loc[two_days_ago]
+    current_co2_value = current_co2.iloc[-1].value
+    current_co2_date = current_co2.iloc[-1].date
+
     max_co2 = df['value'].max()
     max_co2_date = df['value'].idxmax().strftime('%Y-%m-%d')
 
@@ -2577,7 +2586,18 @@ def get_monthly_co2_stats(data, n):
     this_month_avg = monthly_avg.loc[current_year, current_month].value
     last_year_avg = monthly_avg.loc[current_year-1, current_month].value
 
+
     return html.Div([
+        html.Div([
+            html.H6('Current CO2 Value (ppm)', style={'text-align':'center'}) 
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6('{} on {}'.format(current_co2_value, current_co2_date), style={'text-align':'center', 'color':'red'}),
+        ],
+            className='row'
+        ),
         html.Div([
             html.H6('Record CO2 Value (ppm)', style={'text-align':'center'}) 
         ],
@@ -2594,7 +2614,17 @@ def get_monthly_co2_stats(data, n):
             className='row'
         ),
         html.Div([
-            html.H6('{} on {}'.format(max_co2, max_co2_date), style={'text-align':'center', 'color':'red'}),
+            html.H6('{:.2f}'.format(this_month_avg), style={'text-align':'center', 'color': 'red'}),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6('Last Year', style={'text-align':'center'}) 
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6('{:.2f}'.format(last_year_avg), style={'text-align':'center', 'color': 'red'}),
         ],
             className='row'
         ),
