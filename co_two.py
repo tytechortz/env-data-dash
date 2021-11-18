@@ -51,9 +51,11 @@ def co2_App():
                     className='nine columns'
                 ),
                 html.Div([
-                    html.Div(id='max-co2-layout'),
-                    html.Div(id='current-co2-layout'),
-                    html.Div(id='avg-co2-layout'),
+                    html.Div(id='total-co2-stats'),
+                # html.Div([
+                #     html.Div(id='max-co2-layout'),
+                #     html.Div(id='current-co2-layout'),
+                #     html.Div(id='avg-co2-layout'),
                 ],
                     className='three columns'
                 ),
@@ -99,6 +101,11 @@ def co2_App():
                     ),
                 ],
                     className='nine columns'
+                ),
+                html.Div([
+                    html.Div(id='monthly-co2-stats'),
+                ],
+                    className='three columns'
                 ),
             ],
                 className='row'

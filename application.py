@@ -2563,6 +2563,59 @@ def max_co2_stats(co2_data, n):
     ])
 
 @app.callback(
+    Output('total-co2-stats', 'children'),
+    [Input('CO2-data', 'data'),
+    Input('CO2-interval-component', 'n_intervals')])
+def get_monthly_co2_stats(data, n):
+    df = pd.read_json(data)
+    max_co2 = df['value'].max()
+    max_co2_date = df['value'].idxmax().strftime('%Y-%m-%d')
+
+    monthly_avg = df.groupby([df.index.year, df.index.month]).mean()
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+    this_month_avg = monthly_avg.loc[current_year, current_month].value
+    last_year_avg = monthly_avg.loc[current_year-1, current_month].value
+
+    return html.Div([
+        html.Div([
+            html.H6('Record CO2 Value (ppm)', style={'text-align':'center'}) 
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6('{} on {}'.format(max_co2, max_co2_date), style={'text-align':'center', 'color':'red'}),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6('Avg For Month (ppm)', style={'text-align':'center'}) 
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.H6('{} on {}'.format(max_co2, max_co2_date), style={'text-align':'center', 'color':'red'}),
+        ],
+            className='row'
+        ),
+    ])
+
+@app.callback(
+    Output('monthly-co2-stats', 'children'),
+    [Input('CO2-month-data', 'data'),
+    Input('CO2-month', 'value')])
+def get_monthly_co2_stats(data, month):
+    df = pd.read_json(data)
+
+    return html.Div([
+        html.Div([
+            html.H2('Sup')
+        ],
+            className='row'
+        ),
+    ])
+
+@app.callback(
     Output('monthly-co2-levels', 'figure'),
     [Input('CO2-month-data', 'data'),
     Input('CO2-month', 'value')])
