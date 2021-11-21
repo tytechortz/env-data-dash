@@ -30,10 +30,34 @@ def get_nav_bar():
     ])
 
     return navbar
+def get_snow_header():
+
+    header = html.Div([
+
+        # html.Div([], className = 'col-2'), #Same as img width, allowing to have the title centrally aligned
+
+        html.Div([
+            html.H2(
+                'Colorado Snowpack Data',
+                className='twelve columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
+    ])
+
+    return header
 
 def snow_App(): 
     return html.Div([
+        get_snow_header(),
         get_nav_bar(),
+        html.Div([
+            html.H3('STUFF')
+        ],
+            className='row'
+        ),
 ]) 
 
 app.layout = snow_App

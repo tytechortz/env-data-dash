@@ -98,7 +98,7 @@ body = dbc.Container([
          className='six columns'
       ),
       html.Div([
-         html.Img(src='static/assets/snowpack.jpeg', height=350)
+         html.Img(src='static/assets/snowpack.jpg', height=350)
       ],
          className='five columns'
       ),

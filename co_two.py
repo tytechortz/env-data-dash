@@ -30,9 +30,28 @@ def get_nav_bar():
 
     return navbar
 
+def get_co2_header():
+
+    header = html.Div([
+
+        # html.Div([], className = 'col-2'), #Same as img width, allowing to have the title centrally aligned
+
+        html.Div([
+            html.H2(
+                'Atmospheric CO2',
+                className='twelve columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
+    ])
+
+    return header
+
 def co2_App():
     return html.Div([
-        get_river_header(),
+        get_co2_header(),
         get_nav_bar(),
         get_emptyrow(),
         html.Div([
