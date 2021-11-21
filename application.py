@@ -13,6 +13,7 @@ from drought_river import drought_river_App
 from denver_temps import dt_App
 from co_two import co2_App
 from ice import ice_App, month_options
+from snow import snow_App
 import pandas as pd
 from numpy import arange,array,ones
 from scipy import stats
@@ -94,6 +95,8 @@ def display_page(pathname):
         return drought_river_App()
     elif pathname == '/co2':
         return co2_App()
+    elif pathname == '/snow':
+        return snow_App()
     else:
         return Homepage()
 
@@ -2896,6 +2899,15 @@ def update_figure(selected_sea, selected_year, df_fdta):
                 font=dict(color="#2cfec1"),
                 )  
     }
+
+
+#############################################################
+# SNOWPACK ####################
+#############################################################
+
+
+
+
 
 if __name__ == '__main__':
     app.run_server(port=8050, debug=True)

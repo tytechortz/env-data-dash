@@ -73,14 +73,32 @@ body = dbc.Container([
          html.P(
             """ Data from Dr. Pieter Tans, NOAA/ESRL (www.esrl.noaa.gov/gmd/ccgg/trends/) and Dr. Ralph Keeling, Scripps Institution of Oceanography (scrippsco2.ucsd.edu/) """
          ),
-        #  html.H4('Record: {} ppm {}'.format(max_co2, max_co2_date)),
-        #  html.H4('Current: {} ppm {}'.format(current_co2, current_co2_date)),
          dbc.Button("Open App", color="primary", href="/co2"),
       ],
          className='six columns'
       ),
       html.Div([
          html.Img(src='static/assets/mauna-loa.jpg', height=350)
+      ],
+         className='five columns'
+      ),
+   ],
+      className='row'
+   ),
+   html.Div([
+      html.Div([
+         html.H2(
+         'Colorado Snowpack Data',
+         ),
+         html.P(
+            """ Data from """
+         ),
+         dbc.Button("Open App", color="primary", href="/snow"),
+      ],
+         className='six columns'
+      ),
+      html.Div([
+         html.Img(src='static/assets/snowpack.jpeg', height=350)
       ],
          className='five columns'
       ),
