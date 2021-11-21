@@ -54,10 +54,41 @@ def snow_App():
         get_snow_header(),
         get_nav_bar(),
         html.Div([
-            html.H3('STUFF')
+            html.H6('Select River Basin')
         ],
             className='row'
         ),
+        html.Div([
+            html.Div([
+                dcc.Dropdown(
+                        id = 'river-basin',
+                        options = [
+                            {'label': 'Arkansas', 'value': 'arkansas'},
+                            {'label': 'Colorado', 'value': 'colorado_headwaters'},
+                            {'label': 'Gunnison', 'value': 3},
+                            {'label': 'Laramie/N. Platte', 'value': 4},
+                            {'label': 'Rio Grande', 'value': 5},
+                            {'label': 'San Juan', 'value': 6},
+                            {'label': 'South Platte', 'value': 7},
+                            {'label': 'Yampa', 'value': 8},
+                            {'label': 'State of Colorado', 'value': 9},
+                        ],
+                        value = 'arkansas',
+                    )
+            ],
+                className='two columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            dcc.Interval(
+                id='snow-interval-component',
+                interval=3000000,
+                n_intervals=0
+            ),
+        ]),
+        dcc.Store(id='snow-data-raw'),
 ]) 
 
 app.layout = snow_App

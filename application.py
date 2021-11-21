@@ -2905,7 +2905,15 @@ def update_figure(selected_sea, selected_year, df_fdta):
 # SNOWPACK ####################
 #############################################################
 
+ark_snow = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_8/arkansas.csv'
 
+@app.callback(
+    Output('snow-data-raw', 'data'),
+    Input('snow-interval-component', 'n_intervals'))
+def get_snow_data(n):
+    snow_data_raw = pd.read_csv(ark_snow)
+    print(snow_data_raw)
+    return snow_data_raw.to_json()
 
 
 
