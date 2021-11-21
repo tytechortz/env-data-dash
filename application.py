@@ -51,7 +51,7 @@ app.layout = html.Div([
     dcc.Store(id='graph-data', storage_type='session')
 ])
 
-powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-29&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
+powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
 
 mead_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1999-12-30&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
 
@@ -178,7 +178,7 @@ def clean_powell_data(n, powell_data_raw, mead_data_raw):
     
     df_powell_water.columns = ["Site", "Water Level", "Date"]
     
-    df_powell_water = df_powell_water[10:]
+    df_powell_water = df_powell_water[8:]
     
     df_powell_water['power level'] = 6124000
     df_powell_water['sick pool'] = 4158000
@@ -186,13 +186,13 @@ def clean_powell_data(n, powell_data_raw, mead_data_raw):
    
     df_powell_water = df_powell_water.set_index("Date")
     df_powell_water = df_powell_water.sort_index()
-       
+    # print(df_powell_water)
 
     df_mead_water = pd.read_json(mead_data_raw)
     df_mead_water = df_mead_water.drop(df_mead_water.columns[[1,3,4,5,7,8]], axis=1)
     df_mead_water.columns = ["Site", "Water Level", "Date"]
     df_mead_water = df_mead_water[7:]
-    
+    # print(mead)
     df_mead_water['1090'] = 10857000
     df_mead_water['1075'] = 9601000
     df_mead_water['1050'] = 7683000
@@ -203,7 +203,9 @@ def clean_powell_data(n, powell_data_raw, mead_data_raw):
     df_mead_water = df_mead_water.sort_index(ascending=True)
     # print(df_mead_water)
     
-    powell_df = df_powell_water.drop(df_powell_water.index[0])
+    # powell_df = df_powell_water.drop(df_powell_water.index[0])
+    powell_df = df_powell_water
+    # print(powell_df)
     mead_df = df_mead_water.drop(df_mead_water.index[0])
 
     start_date = date(1963, 6, 29)
@@ -323,6 +325,7 @@ def lake_graphs(powell_data, mead_data, combo_data):
     Input('interval-component','n_intervals')])
 def get_current_volumes(powell_data, mead_data, combo_data, n):
     powell_data = pd.read_json(powell_data)
+    print(powell_data)
     powell_data.sort_index()
     powell_current_volume = powell_data.iloc[-1,1]
     powell_current_volume_date = powell_data.index[-1]
@@ -348,7 +351,9 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     # print(powell_rec_low_date)
 
     mead_data = pd.read_json(mead_data)
+    
     mead_data.sort_index()
+    # print(mead_data)
     mead_current_volume = mead_data.iloc[-0,-0]
     mead_current_volume = mead_data['Water Level'].iloc[-1]
     mead_pct = mead_current_volume / capacities['Lake Mead Hoover Dam and Powerplant']
@@ -558,6 +563,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     Input('combo-annual-change', 'data'),])
 def change_graphs(powell_data, mead_data, combo_data):
     df_powell = pd.read_json(powell_data)
+    # print(df_powell)
     df_mead = pd.read_json(mead_data)
     df_combo = pd.read_json(combo_data)
     pd.set_option('display.max_columns', None)
@@ -2654,7 +2660,7 @@ def co2_month_graph(data, month):
     df = pd.read_json(data)
     # df = df.groupby(df.index.year).mean()
     df_21 = df[(df.index.month == month) & (df.index.year == 2021)]
-    print(df_21)
+    # print(df_21)
     df_20 = df[(df.index.month == month) & (df.index.year == 2020)]
 
     data = [
