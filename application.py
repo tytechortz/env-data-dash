@@ -2947,7 +2947,8 @@ def display_year_selector(snow_data):
             dcc.Dropdown(
             id='selected-years',
             options=snow_year_options,
-            # value=2021       
+            multi=True,
+            value='2022'      
             )
         ],
             className='twelve columns'
