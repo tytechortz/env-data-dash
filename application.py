@@ -2905,15 +2905,102 @@ def update_figure(selected_sea, selected_year, df_fdta):
 # SNOWPACK ####################
 #############################################################
 
-ark_snow = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_8/arkansas.csv'
 
 @app.callback(
     Output('snow-data-raw', 'data'),
-    Input('snow-interval-component', 'n_intervals'))
-def get_snow_data(n):
-    snow_data_raw = pd.read_csv(ark_snow)
-    print(snow_data_raw)
-    return snow_data_raw.to_json()
+    [Input('snow-interval-component', 'n_intervals'),
+    Input('river-basin', 'value')])
+def get_snow_data(n, basin):
+    url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_8/'+ basin +'.csv'
+
+    df = pd.read_csv(url)
+    # print(df)
+    return df.to_json()
+
+# @app.callback(
+#     Output('snow-year-options', 'data'),
+#     Input('snow-data-raw', 'data'))
+# def get_sea_options(data):
+#     df = pd.read_json(data)
+#     print(df)
+#     year_options = [1992, current_year]
+    
+#     # print(year_options)
+#     return year_options
+    
+
+@app.callback(
+    Output('snow-year-selector', 'children'),
+    Input('snow-data-raw', 'data'))
+def display_year_selector(snow_data):
+    df = pd.read_json(snow_data)
+    # print(df)
+    df.set_index('date', inplace=True)
+    columns = df.columns.values.tolist()
+    print(columns)
+    snow_year_options = []
+    for c in columns:
+        snow_year_options.append({'label':(c), 'value':c})
+    print(snow_year_options)
+    return html.Div([
+        html.Div([
+            dcc.Checklist(
+            id='selected-years',
+            options=snow_year_options,
+            # value=2021       
+            )
+        ],
+            className='twelve columns'
+        ),
+    ])
+
+@app.callback(
+    Output('snow-graph', 'figure'),
+    Input('snow-data-raw', 'data'))
+def get_snow_graph(snow_data):
+    df = pd.read_json(snow_data)
+    df.set_index('date', inplace=True)
+    # df['date'] = pd.to_datetime(df['date'])
+    
+    print(df)
+
+    data = [
+        go.Scatter(
+            y = df['2022'],
+            x = df.index,
+            name = '2021',
+            mode = 'markers',
+            marker=dict(color='red'),
+        ),
+    ]
+
+    layout = go.Layout(
+        title = 'Snowpack Data',
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+        yaxis=dict(
+            title = 'CO2 PPM',
+            showgrid = True,
+            zeroline = True,
+            showline = True,
+            gridcolor = '#bdbdbd',
+            gridwidth = 2,
+            zerolinecolor = '#969696',
+            zerolinewidth = 2,
+            linecolor = '#636363',
+            linewidth = 2,
+        ),
+        xaxis=dict(
+            title = 'Date',
+            tickformat = '%m/%d'
+        ),
+        height=500
+    )
+
+    return {'data': data, 'layout': layout}
+
+
 
 
 

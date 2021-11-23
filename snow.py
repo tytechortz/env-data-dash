@@ -61,22 +61,32 @@ def snow_App():
         html.Div([
             html.Div([
                 dcc.Dropdown(
-                        id = 'river-basin',
-                        options = [
-                            {'label': 'Arkansas', 'value': 'arkansas'},
-                            {'label': 'Colorado', 'value': 'colorado_headwaters'},
-                            {'label': 'Gunnison', 'value': 3},
-                            {'label': 'Laramie/N. Platte', 'value': 4},
-                            {'label': 'Rio Grande', 'value': 5},
-                            {'label': 'San Juan', 'value': 6},
-                            {'label': 'South Platte', 'value': 7},
-                            {'label': 'Yampa', 'value': 8},
-                            {'label': 'State of Colorado', 'value': 9},
-                        ],
-                        value = 'arkansas',
-                    )
+                    id = 'river-basin',
+                    options = [
+                        {'label': 'Arkansas', 'value': 'arkansas'},
+                        {'label': 'Colorado', 'value': 'colorado_headwaters'},
+                        {'label': 'Gunnison', 'value': 'gunnison'},
+                        {'label': 'Laramie/N. Platte', 'value': 4},
+                        {'label': 'Rio Grande', 'value': 5},
+                        {'label': 'San Juan', 'value': 6},
+                        {'label': 'South Platte', 'value': 7},
+                        {'label': 'Yampa', 'value': 8},
+                        {'label': 'State of Colorado', 'value': 9},
+                    ],
+                    value = 'arkansas',
+                )
             ],
                 className='two columns'
+            ),
+            html.Div(id='snow-year-selector'),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.Div([
+                dcc.Graph(id='snow-graph'),
+            ],
+                className='eight columns'
             ),
         ],
             className='row'
@@ -89,6 +99,7 @@ def snow_App():
             ),
         ]),
         dcc.Store(id='snow-data-raw'),
+        dcc.Store(id='snow-year-options'),
 ]) 
 
 app.layout = snow_App
