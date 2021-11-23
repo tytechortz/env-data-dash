@@ -2944,7 +2944,7 @@ def display_year_selector(snow_data):
     print(snow_year_options)
     return html.Div([
         html.Div([
-            dcc.Checklist(
+            dcc.Dropdown(
             id='selected-years',
             options=snow_year_options,
             # value=2021       

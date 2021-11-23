@@ -54,11 +54,30 @@ def snow_App():
         get_snow_header(),
         get_nav_bar(),
         html.Div([
-            html.H6('Select River Basin')
+            html.Div([
+                html.Div([ 
+                    html.H2(),
+                ],
+                    className='one column'
+                ),
+                html.Div([
+                    html.H6('Select River Basin', style={'text-align': 'left'})
+                ],
+                    className='three columns'
+                ),
+                
+            ],
+                className='twelve columns'
+            ),      
         ],
             className='row'
         ),
         html.Div([
+            html.Div([ 
+                    html.H2(),
+                ],
+                    className='one column'
+                ),
             html.Div([
                 dcc.Dropdown(
                     id = 'river-basin',
@@ -78,7 +97,6 @@ def snow_App():
             ],
                 className='two columns'
             ),
-            html.Div(id='snow-year-selector'),
         ],
             className='row'
         ),
@@ -87,6 +105,20 @@ def snow_App():
                 dcc.Graph(id='snow-graph'),
             ],
                 className='eight columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.Div([ 
+                    html.H2(),
+                ],
+                    className='one column'
+                ),
+            html.Div([
+                html.Div(id='snow-year-selector'),
+            ],
+                className='four columns'
             ),
         ],
             className='row'
