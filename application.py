@@ -2962,20 +2962,31 @@ def display_year_selector(snow_data):
     Input('river-basin', 'value')])
 def get_snow_graph(snow_data, years, basin):
     df = pd.read_json(snow_data)
+    print(df.dtypes)
+    # df['date'] = df['date'].astype('str')
+    # df['date'] = pd.to_datetime(df['date'])
+    # df['date'] = df['date'].dt.strftime('%m-%d')
     df.set_index('date', inplace=True)
+    
+    # print(df['date'])
+    # df['date'] = df['date'].strftime('%m-%d')
+    # print(df.index.dtype)
+    # df.index = df.index.strftime('%m-%d')
     # df['date'] = pd.to_datetime(df['date'])
     print(df)
     print(years)
     # years = []
     df1 = df[years]
+    df1.columns = [years]
+    df1 = df1.dropna()
     print(df1)
 
     data = [
         go.Scatter(
-            y = df['2022'],
-            x = df.index,
+            y = df1,
+            x = df1.index,
             name = '2021',
-            mode = 'markers',
+            mode = 'lines',
             marker=dict(color='red'),
         ),
     ]
@@ -2998,8 +3009,9 @@ def get_snow_graph(snow_data, years, basin):
             linewidth = 2,
         ),
         xaxis=dict(
+            type = 'category',
             title = 'Date',
-            tickformat = '%m/%d'
+            tickformat = '%m-%d'
         ),
         height=500
     )
