@@ -3000,7 +3000,11 @@ def get_snow_graph(snow_data, years, basin):
         xaxis=dict(
             type = 'category',
             title = 'Date',
-            tickformat = '%m-%d'
+            tickformat = '%m-%d',
+            tickvals = ['10-01', '12-01', '02-01', '04-01', '06-01', '08-01', '09-30'],
+            showgrid = True,
+            gridcolor = '#bdbdbd',
+            gridwidth = .5,
         ),
         height=500
     )
