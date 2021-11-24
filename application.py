@@ -2948,7 +2948,7 @@ def display_year_selector(snow_data):
             id='selected-years',
             options=snow_year_options,
             multi=True,
-            value=["2022", "Median (POR)"]    
+            value=["2022", "Median (POR)", "Max", "Min"]    
             )
         ],
             className='twelve columns'
@@ -2962,7 +2962,8 @@ def display_year_selector(snow_data):
     Input('river-basin', 'value')])
 def get_snow_graph(snow_data, years, basin):
     df = pd.read_json(snow_data)
-    print(df)
+    # print(df)
+    print(years)
     df.set_index('date', inplace=True)
     pd.set_option('display.max_rows', None)
     df1 = df[years]
@@ -2971,7 +2972,7 @@ def get_snow_graph(snow_data, years, basin):
     # print(type(years))
     # print(len(years))
     # print(years)
-    print(df1)
+    # print(df1)
     df_median = df[["Median ('91-'20)"]]
     
     # print(df_median)
@@ -3000,11 +3001,14 @@ def get_snow_graph(snow_data, years, basin):
     data = []
 
     for col in df1.columns:
-        data.append(go.Scatter(
-            y=df1[col],
-            x=df1.index,
-        ))
-
+        for x in col:
+            data.append(go.Scatter(
+                y=df1[col],
+                x=df1.index,
+                name=x
+            ))
+        # for col in df1.columns:
+        # print(col)
     
     # data = traces
 
@@ -3014,7 +3018,7 @@ def get_snow_graph(snow_data, years, basin):
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
         yaxis=dict(
-            title = 'CO2 PPM',
+            title = 'SWE',
             showgrid = True,
             zeroline = True,
             showline = True,
