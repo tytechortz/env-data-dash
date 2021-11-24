@@ -2937,7 +2937,7 @@ def display_year_selector(snow_data):
     # print(df)
     df.set_index('date', inplace=True)
     columns = df.columns.values.tolist()
-    print(columns)
+    # print(columns)
     snow_year_options = []
     for c in columns:
         snow_year_options.append({'label':(c), 'value':c})
@@ -2962,34 +2962,36 @@ def display_year_selector(snow_data):
     Input('river-basin', 'value')])
 def get_snow_graph(snow_data, years, basin):
     df = pd.read_json(snow_data)
-    print(df.dtypes)
-    # df['date'] = df['date'].astype('str')
-    # df['date'] = pd.to_datetime(df['date'])
-    # df['date'] = df['date'].dt.strftime('%m-%d')
+    
     df.set_index('date', inplace=True)
     
-    # print(df['date'])
-    # df['date'] = df['date'].strftime('%m-%d')
-    # print(df.index.dtype)
-    # df.index = df.index.strftime('%m-%d')
-    # df['date'] = pd.to_datetime(df['date'])
-    print(df)
-    print(years)
-    # years = []
     df1 = df[years]
     df1.columns = [years]
     df1 = df1.dropna()
-    print(df1)
+    print(type(years))
+    print(len(years))
 
-    data = [
-        go.Scatter(
-            y = df1,
-            x = df1.index,
-            name = '2021',
-            mode = 'lines',
-            marker=dict(color='red'),
-        ),
-    ]
+    if type(years) == str:
+        data = [
+            go.Scatter(
+                y = df1,
+                x = df1.index,
+                name = '2021',
+                mode = 'lines',
+                marker=dict(color='red'),
+            ),
+        ]
+    else:
+        data = []
+
+        for col in df1.columns:
+            data.append(go.Scatter(
+                y=df1[col],
+                # name=col
+            ))
+
+    
+    # data = traces
 
     layout = go.Layout(
         title = 'Snowpack Data',
