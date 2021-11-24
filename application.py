@@ -2941,7 +2941,7 @@ def display_year_selector(snow_data):
     snow_year_options = []
     for c in columns:
         snow_year_options.append({'label':(c), 'value':c})
-    print(snow_year_options)
+    # print(snow_year_options)
     return html.Div([
         html.Div([
             dcc.Dropdown(
@@ -2957,13 +2957,18 @@ def display_year_selector(snow_data):
 
 @app.callback(
     Output('snow-graph', 'figure'),
-    Input('snow-data-raw', 'data'))
-def get_snow_graph(snow_data):
+    [Input('snow-data-raw', 'data'),
+    Input('selected-years', 'value'),
+    Input('river-basin', 'value')])
+def get_snow_graph(snow_data, years, basin):
     df = pd.read_json(snow_data)
     df.set_index('date', inplace=True)
     # df['date'] = pd.to_datetime(df['date'])
-    
     print(df)
+    print(years)
+    # years = []
+    df1 = df[years]
+    print(df1)
 
     data = [
         go.Scatter(
