@@ -2962,42 +2962,14 @@ def display_year_selector(snow_data):
     Input('river-basin', 'value')])
 def get_snow_graph(snow_data, years, basin):
     df = pd.read_json(snow_data)
-    # print(df)
-    print(years)
+    
     df.set_index('date', inplace=True)
     pd.set_option('display.max_rows', None)
     df1 = df[years]
     df1.columns = [years]
-    # df1 = df1.dropna()
-    # print(type(years))
-    # print(len(years))
-    # print(years)
-    # print(df1)
+    print(df1)
     df_median = df[["Median ('91-'20)"]]
     
-    # print(df_median)
-    # df_median.set_index('date', inplace=True)
-    # print(df_median)
-
-    # if type(years) == str:
-    #     data = [
-    #         go.Scatter(
-    #             y = df1,
-    #             # x = df1.index,
-    #             name = years,
-    #             mode = 'lines',
-    #             marker=dict(color='red'),
-    #         ),
-
-    #         go.Scatter(
-    #             y = df_median,
-    #             x = df_median.index,
-    #             # name = years,
-    #             mode = 'lines',
-    #             marker=dict(color='blue'),
-    #         )
-    #     ]
-    # else:
     data = []
 
     for col in df1.columns:
@@ -3007,13 +2979,9 @@ def get_snow_graph(snow_data, years, basin):
                 x=df1.index,
                 name=x
             ))
-        # for col in df1.columns:
-        # print(col)
-    
-    # data = traces
 
     layout = go.Layout(
-        title = 'Snowpack Data',
+        title = '{} River Snowpack Data'.format(basin.capitalize()),
         paper_bgcolor="#1f2630",
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
