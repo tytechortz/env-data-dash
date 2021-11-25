@@ -2972,12 +2972,15 @@ def get_snow_graph(snow_data, years, basin):
     
     data = []
 
-    for col in df1.columns:
+    color_list = ['white', 'orange', 'red', 'green', 'goldenrod', 'yellow']
+
+    for idx, col in enumerate(df1.columns):
         for x in col:
             data.append(go.Scatter(
                 y=df1[col],
                 x=df1.index,
-                name=x
+                name=x,
+                line_color=color_list[idx]
             ))
 
     layout = go.Layout(

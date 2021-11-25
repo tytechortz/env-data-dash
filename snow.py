@@ -106,6 +106,11 @@ def snow_App():
             ],
                 className='eight columns'
             ),
+            html.Div([
+                html.H6('Current as of {}'.format('today'), style={'text-align': 'center'})
+            ],
+                className='four columns'
+            ),
         ],
             className='row'
         ),
