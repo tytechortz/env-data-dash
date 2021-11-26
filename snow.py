@@ -92,7 +92,7 @@ def snow_App():
                         {'label': 'Yampa', 'value': 'yampa-white-little_snake'},
                         {'label': 'State of Colorado', 'value': 'state_of_colorado'},
                     ],
-                    value = 'arkansas',
+                    value = 'state_of_colorado',
                 )
             ],
                 className='two columns'

@@ -2953,7 +2953,7 @@ def display_year_selector(snow_data):
             id='selected-years',
             options=snow_year_options,
             multi=True,
-            value=["2022", "2021", "Median (POR)", "Max", "Min"]    
+            value=["2022", "2021", "Median ('91-'20)", "Max", "Min"]    
             )
         ],
             className='twelve columns'
@@ -2971,23 +2971,28 @@ def get_snow_stats(snow_data, years, basin):
     df.set_index('date', inplace=True)
     pd.set_option('display.max_rows', None)
 
-    df['pct'] = df['2022']/df['Median (POR)']
+    
     df = df[years]
+    df['pct'] = df['2022']/df["Median ('91-'20)"]
     print(df)
     today_snow = df.loc[cur_mo_day]
     yest_snow = df.loc[yes_mo_day]
 
-    pon = today_snow['2022'] / today_snow['Median (POR)']
+    pon = today_snow['2022'] / today_snow["Median ('91-'20)"]
     print(pon)
-    ypon = yest_snow['2022'] / yest_snow['Median (POR)']
+    ypon = yest_snow['2022'] / yest_snow["Median ('91-'20)"]
     day_change = pon - ypon
     print(day_change)
+    lypon = today_snow['2021'] / today_snow["Median ('91-'20)"]
+    year_change = pon - lypon
+
 
     return html.Div([
         html.Div([
-            html.H6('DATA for {}'.format(today),style={'text-align': 'center'}),
+            html.H6('Updated {}'.format(today),style={'text-align': 'center'}),
             html.H6('% of Median : {0:.1%}'.format(pon),style={'text-align': 'left'}),
-            html.H6('24-hr change : {0:.1%}'.format(day_change),style={'text-align': 'left'})
+            html.H6('24-hr change : {0:.1%}'.format(day_change),style={'text-align': 'left'}),
+            html.H6('1 Year Change : {0:.1%}'.format(year_change),style={'text-align': 'left'})
         ],
             className='row'
         ),
