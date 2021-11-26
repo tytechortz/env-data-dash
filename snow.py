@@ -89,7 +89,7 @@ def snow_App():
                         {'label': 'Rio Grande', 'value': 'upper_rio_grande'},
                         {'label': 'San Juan', 'value': 'san_miguel-dolores-animas-san_juan'},
                         {'label': 'South Platte', 'value': 'south_platte'},
-                        {'label': 'Yampa', 'value': 'yampa'},
+                        {'label': 'Yampa', 'value': 'yampa-white-little_snake'},
                         {'label': 'State of Colorado', 'value': 'state_of_colorado'},
                     ],
                     value = 'arkansas',
@@ -107,7 +107,7 @@ def snow_App():
                 className='eight columns'
             ),
             html.Div([
-                html.H6('Current as of {}'.format('today'), style={'text-align': 'center'})
+                html.Div(id='snowpack-stats'),
             ],
                 className='four columns'
             ),

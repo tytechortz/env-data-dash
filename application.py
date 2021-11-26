@@ -25,6 +25,8 @@ import io
 
 
 today = time.strftime("%Y-%m-%d")
+cur_mo_day = time.strftime("%m-%d")
+print(cur_mo_day)
 # yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
 current_year = datetime.now().year
@@ -2911,22 +2913,19 @@ def update_figure(selected_sea, selected_year, df_fdta):
     [Input('snow-interval-component', 'n_intervals'),
     Input('river-basin', 'value')])
 def get_snow_data(n, basin):
-    url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_8/'+ basin +'.csv'
+    print(basin)
+    
+    if basin == 'state_of_colorado':
+        url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_3/'+ basin +'.csv'
+    else:
+        url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_8/'+ basin +'.csv',
+    
+    print(url)
 
-    df = pd.read_csv(url)
-    # print(df)
+    df = pd.read_csv(url[0])
+    print(df)
     return df.to_json()
 
-# @app.callback(
-#     Output('snow-year-options', 'data'),
-#     Input('snow-data-raw', 'data'))
-# def get_sea_options(data):
-#     df = pd.read_json(data)
-#     print(df)
-#     year_options = [1992, current_year]
-    
-#     # print(year_options)
-#     return year_options
     
 
 @app.callback(
@@ -2948,10 +2947,38 @@ def display_year_selector(snow_data):
             id='selected-years',
             options=snow_year_options,
             multi=True,
-            value=["2022", "Median (POR)", "Max", "Min"]    
+            value=["2022", "2021", "Median (POR)", "Max", "Min"]    
             )
         ],
             className='twelve columns'
+        ),
+    ])
+
+@app.callback(
+    Output('snowpack-stats', 'children'),
+    [Input('snow-data-raw', 'data'),
+    Input('selected-years', 'value'),
+    Input('river-basin', 'value')])
+def get_snow_stats(snow_data, years, basin):
+    df = pd.read_json(snow_data)
+    
+    df.set_index('date', inplace=True)
+    pd.set_option('display.max_rows', None)
+
+    df['pct'] = df['2022']/df['Median (POR)']
+    df = df[years]
+    # print(df)
+    today_snow = df.loc[cur_mo_day]
+    pon = today_snow['2022'] / today_snow['Median (POR)']
+    print(pon)
+    
+
+    return html.Div([
+        html.Div([
+            html.H2('STATS'),
+            html.H6('% of Median - {}'.format(pon))
+        ],
+            className='row'
         ),
     ])
 
@@ -2984,7 +3011,7 @@ def get_snow_graph(snow_data, years, basin):
             ))
 
     layout = go.Layout(
-        title = '{} River Snowpack Data'.format(basin.capitalize()),
+        title = '{} Snowpack Data'.format(basin.capitalize()),
         paper_bgcolor="#1f2630",
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
