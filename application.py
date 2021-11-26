@@ -25,8 +25,10 @@ import io
 
 
 today = time.strftime("%Y-%m-%d")
+yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 cur_mo_day = time.strftime("%m-%d")
-print(cur_mo_day)
+yes_mo_day = yesterday[5:]
+print(yes_mo_day)
 # yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
 current_year = datetime.now().year
@@ -2916,13 +2918,17 @@ def get_snow_data(n, basin):
     print(basin)
     
     if basin == 'state_of_colorado':
-        url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_3/'+ basin +'.csv'
+        url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco3/state_of_colorado.csv',
+        df = pd.read_csv(url[0])
     else:
         url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_8/'+ basin +'.csv',
+        df = pd.read_csv(url[0])
+        
     
     print(url)
+    # print(df)
 
-    df = pd.read_csv(url[0])
+    # df = pd.read_csv(url[0])
     # print(df)
     return df.to_json()
 
@@ -2969,14 +2975,19 @@ def get_snow_stats(snow_data, years, basin):
     df = df[years]
     print(df)
     today_snow = df.loc[cur_mo_day]
+    yest_snow = df.loc[yes_mo_day]
+
     pon = today_snow['2022'] / today_snow['Median (POR)']
     print(pon)
-    
+    ypon = yest_snow['2022'] / yest_snow['Median (POR)']
+    day_change = pon - ypon
+    print(day_change)
 
     return html.Div([
         html.Div([
             html.H6('DATA for {}'.format(today),style={'text-align': 'center'}),
-            html.H6('% of Median - {0:.1%}'.format(pon),style={'text-align': 'left'})
+            html.H6('% of Median : {0:.1%}'.format(pon),style={'text-align': 'left'}),
+            html.H6('24-hr change : {0:.1%}'.format(day_change),style={'text-align': 'left'})
         ],
             className='row'
         ),
