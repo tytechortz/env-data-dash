@@ -2923,7 +2923,7 @@ def get_snow_data(n, basin):
     print(url)
 
     df = pd.read_csv(url[0])
-    print(df)
+    # print(df)
     return df.to_json()
 
     
@@ -2967,7 +2967,7 @@ def get_snow_stats(snow_data, years, basin):
 
     df['pct'] = df['2022']/df['Median (POR)']
     df = df[years]
-    # print(df)
+    print(df)
     today_snow = df.loc[cur_mo_day]
     pon = today_snow['2022'] / today_snow['Median (POR)']
     print(pon)
@@ -2975,8 +2975,8 @@ def get_snow_stats(snow_data, years, basin):
 
     return html.Div([
         html.Div([
-            html.H2('STATS'),
-            html.H6('% of Median - {}'.format(pon))
+            html.H6('DATA for {}'.format(today),style={'text-align': 'center'}),
+            html.H6('% of Median - {0:.1%}'.format(pon),style={'text-align': 'left'})
         ],
             className='row'
         ),
@@ -2994,12 +2994,12 @@ def get_snow_graph(snow_data, years, basin):
     pd.set_option('display.max_rows', None)
     df1 = df[years]
     df1.columns = [years]
-    print(df1)
+    # print(df1)
     df_median = df[["Median ('91-'20)"]]
     
     data = []
 
-    color_list = ['white', 'orange', 'red', 'green', 'goldenrod', 'yellow']
+    color_list = ['white', 'blue', 'goldenrod', 'green', 'red', 'pink']
 
     for idx, col in enumerate(df1.columns):
         for x in col:
