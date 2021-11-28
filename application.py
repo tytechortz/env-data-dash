@@ -3075,7 +3075,7 @@ def get_snow_graph(snow_data, years, basin):
     ]
 
     layout2 = go.Layout(
-        title = '{} Snowpack Data'.format(basin.capitalize()),
+        title = 'Snowpack as Pct. of Normal',
         paper_bgcolor="#1f2630",
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
