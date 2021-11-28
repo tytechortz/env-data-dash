@@ -129,6 +129,15 @@ def snow_App():
             className='row'
         ),
         html.Div([
+            html.Div([
+                dcc.Graph(id='snow-daily-pct')
+            ],
+                className='eight columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
             dcc.Interval(
                 id='snow-interval-component',
                 interval=3000000,

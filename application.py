@@ -2974,7 +2974,7 @@ def get_snow_stats(snow_data, years, basin):
     
     df = df[years]
     df['pct'] = df['2022']/df["Median ('91-'20)"]
-    print(df)
+    # print(df)
     today_snow = df.loc[cur_mo_day]
     yest_snow = df.loc[yes_mo_day]
 
@@ -2998,8 +2998,11 @@ def get_snow_stats(snow_data, years, basin):
         ),
     ])
 
+
+
 @app.callback(
-    Output('snow-graph', 'figure'),
+    [Output('snow-graph', 'figure'),
+    Output('snow-daily-pct', 'figure')],
     [Input('snow-data-raw', 'data'),
     Input('selected-years', 'value'),
     Input('river-basin', 'value')])
@@ -3007,9 +3010,16 @@ def get_snow_graph(snow_data, years, basin):
     df = pd.read_json(snow_data)
     
     df.set_index('date', inplace=True)
+    df['pct'] = df['2022']/df["Median ('91-'20)"]
+    # print(df)
     pd.set_option('display.max_rows', None)
     df1 = df[years]
     df1.columns = [years]
+    # print(df1)
+    # df1['pct'] = df1['2022']/df1["Median ('91-'20)"]
+    df_pct = df[['2022', 'pct']].copy()
+    df_pct = df_pct.drop(df_pct[df_pct.index < '11-01'].index)
+    print(df_pct)
     # print(df1)
     df_median = df[["Median ('91-'20)"]]
     
@@ -3055,7 +3065,46 @@ def get_snow_graph(snow_data, years, basin):
         height=500
     )
 
-    return {'data': data, 'layout': layout}
+    data2 = [
+        go.Scatter(
+            y = df_pct['pct'],
+            x = df_pct.index,
+            mode = 'lines',
+            marker=dict(color='red'),
+        )
+    ]
+
+    layout2 = go.Layout(
+        title = '{} Snowpack Data'.format(basin.capitalize()),
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+        yaxis=dict(
+            title = 'SWE',
+            showgrid = True,
+            zeroline = True,
+            showline = True,
+            gridcolor = '#bdbdbd',
+            gridwidth = 1,
+            zerolinecolor = '#969696',
+            zerolinewidth = 2,
+            linecolor = '#636363',
+            linewidth = 2,
+        ),
+        xaxis=dict(
+            type = 'category',
+            title = 'Date',
+            tickformat = '%m-%d',
+            tickvals = ['10-01', '12-01', '02-01', '04-01', '06-01', '08-01', '09-30'],
+            showgrid = True,
+            gridcolor = '#bdbdbd',
+            gridwidth = .5,
+        ),
+        height=500
+    )
+
+
+    return {'data': data, 'layout': layout}, {'data': data2, 'layout': layout2}
 
 
 
