@@ -3080,7 +3080,7 @@ def get_snow_graph(snow_data, years, basin):
         plot_bgcolor="#1f2630",
         font=dict(color="#2cfec1"),
         yaxis=dict(
-            title = 'SWE',
+            title = 'Pct of Normal',
             showgrid = True,
             zeroline = True,
             showline = True,
@@ -3095,7 +3095,7 @@ def get_snow_graph(snow_data, years, basin):
             type = 'category',
             title = 'Date',
             tickformat = '%m-%d',
-            tickvals = ['10-01', '12-01', '02-01', '04-01', '06-01', '08-01', '09-30'],
+            tickvals = ['10-01', '11-01', '12-01', '01-01', '02-01', '03-01', '04-30', '05-01', '06-01'],
             showgrid = True,
             gridcolor = '#bdbdbd',
             gridwidth = .5,
