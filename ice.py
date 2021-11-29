@@ -6,6 +6,16 @@ from colorado_river import get_river_header, get_emptyrow
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
+# Read data
+df = pd.read_csv('ftp://sidads.colorado.edu/DATASETS/NOAA/G02186/masie_4km_allyears_extent_sqkm.csv', skiprows=1)
+
+# Format date and set indext to date
+df['yyyyddd'] = pd.to_datetime(df['yyyyddd'], format='%Y%j')
+df.set_index('yyyyddd', inplace=True)
+df.columns = ['Total Arctic Sea', 'Beaufort Sea', 'Chukchi Sea', 'East Siberian Sea', 'Laptev Sea', 'Kara Sea',\
+     'Barents Sea', 'Greenland Sea', 'Bafin Bay Gulf of St. Lawrence', 'Canadian Archipelago', 'Hudson Bay', 'Central Arctic',\
+         'Bering Sea', 'Baltic Sea', 'Sea of Okhotsk', 'Yellow Sea', 'Cook Inlet']
+
 month_options = [
 {'label':'JAN', 'value':1},
 {'label':'FEB', 'value':2},
