@@ -2831,13 +2831,13 @@ def get_ice_data(data):
 
     return df.to_json()
 
-@app.callback(
-    Output('fdta', 'data'),
-    [Input('product', 'value')])
-def clean_fdta(selected_product):
-    df_fdta = df.rolling(window=5).mean()
-    if selected_product == 'years-graph' or selected_product == 'extent-stats' or selected_product == 'extent-date' or selected_product == 'moving-avg':
-        return df_fdta.to_json()
+# @app.callback(
+#     Output('fdta', 'data'),
+#     [Input('product', 'value')])
+# def clean_fdta(selected_product):
+#     df_fdta = df.rolling(window=5).mean()
+#     if selected_product == 'years-graph' or selected_product == 'extent-stats' or selected_product == 'extent-date' or selected_product == 'moving-avg':
+#         return df_fdta.to_json()
 
 @app.callback(
     Output('sea-options', 'data'),
@@ -3119,4 +3119,4 @@ def get_snow_graph(snow_data, years, basin):
 
 
 if __name__ == '__main__':
-    app.run_server(port=8050, debug=True)
+    app.run_server(port=8050, debug=False)
