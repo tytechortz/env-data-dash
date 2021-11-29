@@ -109,8 +109,8 @@ def get_nav_bar():
                 className='twelve columns'
             ),
         ],
-            className = 'row',
-                style = {'background-color' : 'dark-green',
+            className='row',
+                style={'background-color' : 'dark-green',
                         'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
         ),
     ])
