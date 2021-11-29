@@ -12,7 +12,7 @@ from upper_res import ur_App
 from drought_river import drought_river_App
 from denver_temps import dt_App
 from co_two import co2_App
-from ice import ice_App, month_options, df
+from ice import ice_App
 from snow import snow_App
 import pandas as pd
 from numpy import arange,array,ones
@@ -2807,29 +2807,29 @@ def display_sea_selector(product_value, sea_options):
             className='pretty_container'
         ),
 
-# @app.callback(
-#     Output('ice-data', 'data'),
-#     Input('ice-interval-component', 'n_intervals'))
-# def get_ice_data(n):
-#     df = pd.read_csv('ftp://sidads.colorado.edu/DATASETS/NOAA/G02186/masie_4km_allyears_extent_sqkm.csv', skiprows=1)
+@app.callback(
+    Output('ice-data', 'data'),
+    Input('ice-interval-component', 'n_intervals'))
+def get_ice_data(n):
+    df = pd.read_csv('ftp://sidads.colorado.edu/DATASETS/NOAA/G02186/masie_4km_allyears_extent_sqkm.csv', skiprows=1)
 
-#     # Format date and set indext to date
-#     df['yyyyddd'] = pd.to_datetime(df['yyyyddd'], format='%Y%j')
-#     df.set_index('yyyyddd', inplace=True)
-#     df.columns = ['Total Arctic Sea', 'Beaufort Sea', 'Chukchi Sea', 'East Siberian Sea', 'Laptev Sea', 'Kara Sea',\
-#         'Barents Sea', 'Greenland Sea', 'Bafin Bay Gulf of St. Lawrence', 'Canadian Archipelago', 'Hudson Bay', 'Central Arctic',\
-#             'Bering Sea', 'Baltic Sea', 'Sea of Okhotsk', 'Yellow Sea', 'Cook Inlet']
+    # Format date and set indext to date
+    df['yyyyddd'] = pd.to_datetime(df['yyyyddd'], format='%Y%j')
+    df.set_index('yyyyddd', inplace=True)
+    df.columns = ['Total Arctic Sea', 'Beaufort Sea', 'Chukchi Sea', 'East Siberian Sea', 'Laptev Sea', 'Kara Sea',\
+        'Barents Sea', 'Greenland Sea', 'Bafin Bay Gulf of St. Lawrence', 'Canadian Archipelago', 'Hudson Bay', 'Central Arctic',\
+            'Bering Sea', 'Baltic Sea', 'Sea of Okhotsk', 'Yellow Sea', 'Cook Inlet']
 
-#     return df.to_json()
+    return df.to_json()
 
-# @app.callback(
-#     Output('fdta', 'data'),
-#     Input('ice-data', 'data'))
-# def get_ice_data(data):
-#     df = pd.read_json(data)
-#     df_fdta = df.rolling(window=5).mean()
+@app.callback(
+    Output('fdta', 'data'),
+    Input('ice-data', 'data'))
+def get_ice_data(data):
+    df = pd.read_json(data)
+    df_fdta = df.rolling(window=5).mean()
 
-#     return df.to_json()
+    return df.to_json()
 
 @app.callback(
     Output('fdta', 'data'),
