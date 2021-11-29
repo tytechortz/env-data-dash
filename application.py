@@ -2761,7 +2761,7 @@ def co2_graph(co2_data, n):
     Output('ice-graph-layout', 'children'),
     Input('product', 'value'))
 def ice_graph_layout(product):
-    # print(product)
+    print(product)
     if product == 'years-graph':
         return html.Div([
             html.Div([
