@@ -3119,4 +3119,4 @@ def get_snow_graph(snow_data, years, basin):
 
 
 if __name__ == '__main__':
-    application.run_server(debug=False)
+    app.run_server(host="0.0.0.0", debug=False)
