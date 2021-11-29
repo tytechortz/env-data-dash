@@ -2761,7 +2761,7 @@ def co2_graph(co2_data, n):
     Output('ice-graph-layout', 'children'),
     Input('product', 'value'))
 def ice_graph_layout(product):
-    print(product)
+    # print(product)
     if product == 'years-graph':
         return html.Div([
             html.Div([
@@ -2880,10 +2880,10 @@ def display_year_selector(product_value, year_options):
     Input('selected-years', 'value'),
     Input('fdta', 'data')])
 def update_figure(selected_sea, selected_year, df_fdta):
-    print(selected_year)
+    # print(selected_year)
     traces = []
     df_fdta = pd.read_json(df_fdta)
-    print(df_fdta)
+    # print(df_fdta)
     for x in selected_year:
         sorted_daily_values=df_fdta[df_fdta.index.year == x]
         traces.append(go.Scatter(
