@@ -28,7 +28,7 @@ today = time.strftime("%Y-%m-%d")
 yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 cur_mo_day = time.strftime("%m-%d")
 yes_mo_day = yesterday[5:]
-print(yes_mo_day)
+# print(yes_mo_day)
 # yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
 current_year = datetime.now().year
