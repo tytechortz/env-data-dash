@@ -108,7 +108,7 @@ def ice_App():
 
         dcc.Interval(
             id='ice-interval-component',
-            interval=500*1000, # in milliseconds
+            interval=500000, # in milliseconds
             n_intervals=0
         ),
 
