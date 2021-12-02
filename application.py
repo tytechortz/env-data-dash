@@ -2758,6 +2758,134 @@ def co2_graph(co2_data, n):
 #################################################
 
 @app.callback(
+    Output('current-stats', 'children'),
+    [Input('selected-sea', 'value'),
+    Input('product', 'value'),
+    Input('fdta', 'data')])
+def update_current_stats(selected_sea, selected_product, df_fdta):
+    df_fdta = pd.read_json(df_fdta)
+    print(df_fdta)
+    annual_max_all = df_fdta[selected_sea].loc[df_fdta.groupby(pd.Grouper(freq='Y')).idxmax().iloc[:, 0]]
+    sorted_annual_max_all = annual_max_all.sort_values(axis=0, ascending=True)
+    today_value = df_fdta[selected_sea][-1]
+    daily_change = today_value - df_fdta[selected_sea][-2]
+    week_ago_value = df_fdta[selected_sea].iloc[-7]
+    weekly_change = today_value - week_ago_value
+    record_min = df_fdta[selected_sea].min()
+    record_min_difference = today_value - record_min
+    record_low_max = sorted_annual_max_all[-1]
+    record_max_difference = today_value - record_low_max
+  
+    if selected_product == 'years-graph':
+        return html.Div([
+                    html.H6('Current Extent', style={'text-align': 'center'}),
+                    html.Div([
+                        html.Div([
+                            html.H6('{:,.0f}'.format(today_value), style={'text-align': 'center'}), 
+                        ],
+                            className='row'
+                        ),  
+                    ]),
+                    html.Div([
+                        html.H6('Daily Change', style={'text-align': 'center'}),
+                        html.Div([
+                            html.Div([
+                                html.H6('{:,.0f}'.format(daily_change), style={'text-align': 'center'}), 
+                            ],
+                                className='row'
+                            ),  
+                        ]),      
+                    ]),
+                    html.Div([
+                        html.H6('Weekly Change', style={'text-align': 'center'}),
+                        html.Div([
+                            html.Div([
+                                html.H6('{:,.0f}'.format(weekly_change), style={'text-align': 'center'}), 
+                            ],
+                                className='row'
+                            ),  
+                        ]),      
+                    ]),
+                    html.Div([
+                        html.H6('Diff From Rec Low Min', style={'text-align': 'center'}),
+                        html.Div([
+                            html.Div([
+                                html.H6('{:,.0f}'.format(record_min_difference), style={'text-align': 'center'}), 
+                            ],
+                                className='row'
+                            ),  
+                        ]),      
+                    ]),
+                    html.Div([
+                        html.H6('Diff From Rec Low Max', style={'text-align': 'center'}),
+                        html.Div([
+                            html.Div([
+                                html.H6('{:,.0f}'.format(record_max_difference), style={'text-align': 'center'}), 
+                            ],
+                                className='row'
+                            ),  
+                        ]),      
+                    ]),      
+                ],
+                    className='row'
+                ),
+
+@app.callback(
+    Output('ice-stats', 'children'),
+    [Input('product', 'value')])
+def stats_n_stuff(product):
+    if product == 'years-graph':
+        return html.Div([
+            html.Div([
+                html.Div(id='year-selector')
+            ],
+                className='three columns'
+            ), 
+            html.Div([
+                html.Div(id='current-stats')
+            ],
+                className='eight columns'
+            ),
+        ],
+            className='twelve columns'
+        ),
+    elif product == 'monthly-bar':
+        return html.Div([
+            html.Div([
+                html.Div(id='monthly-bar-stats')
+            ],
+                className='twelve columns'
+            )
+        ],
+            className='twelve columns'
+        ),
+    elif product == 'extent-date':
+        return html.Div([
+            html.Div([
+                html.Div([
+                    html.Div(id='extent-date')
+                ],
+                    className='seven columns'
+                ),
+            ],
+                className='row'
+            ),
+            
+        ],
+            className='twelve columns'
+        ),
+    elif product == 'moving-avg':
+        return html.Div([
+            html.Div([
+                html.Div(id='moving-avg-stats')
+            ],
+                className='twelve columns'
+            ),
+        ],
+            className='twelve columns'
+        ),
+
+@app.callback(
     Output('ice-graph-layout', 'children'),
     Input('product', 'value'))
 def ice_graph_layout(product):
@@ -2777,12 +2905,17 @@ def ice_graph_layout(product):
                 html.Div([
                     dcc.Graph(id='ice-extent'),
                 ],
-                    className='eight columns'
+                    className='seven columns'
                 ),
                 html.Div([
                     html.Div(id='year-selector'),
                 ],
-                    className='two columns'
+                    className='one column'
+                ),
+                html.Div([
+                    html.Div(id='ice-stats')
+                ],
+                    className='three columns'
                 ),
             ],
                 className='row'
