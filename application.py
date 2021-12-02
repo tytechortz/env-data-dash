@@ -28,7 +28,7 @@ today = time.strftime("%Y-%m-%d")
 yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 cur_mo_day = time.strftime("%m-%d")
 yes_mo_day = yesterday[5:]
-print(yes_mo_day)
+# print(yes_mo_day)
 # yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
 current_year = datetime.now().year
@@ -2831,6 +2831,14 @@ def get_ice_data(data):
 
     return df.to_json()
 
+# @app.callback(
+#     Output('fdta', 'data'),
+#     [Input('product', 'value')])
+# def clean_fdta(selected_product):
+#     df_fdta = df.rolling(window=5).mean()
+#     if selected_product == 'years-graph' or selected_product == 'extent-stats' or selected_product == 'extent-date' or selected_product == 'moving-avg':
+#         return df_fdta.to_json()
+
 @app.callback(
     Output('sea-options', 'data'),
     Input('ice-data', 'data'))
@@ -2880,7 +2888,7 @@ def display_year_selector(product_value, year_options):
     Input('selected-years', 'value'),
     Input('fdta', 'data')])
 def update_figure(selected_sea, selected_year, df_fdta):
-    print(selected_year)
+    # print(selected_year)
     traces = []
     df_fdta = pd.read_json(df_fdta)
     # print(df_fdta)
@@ -3111,4 +3119,4 @@ def get_snow_graph(snow_data, years, basin):
 
 
 if __name__ == '__main__':
-    app.run_server(port=8050, debug=True)
+    app.run_server(debug=True)

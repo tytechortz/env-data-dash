@@ -6,6 +6,21 @@ from colorado_river import get_river_header, get_emptyrow
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
+# Read data
+# df = pd.read_csv('ftp://sidads.colorado.edu/DATASETS/NOAA/G02186/masie_4km_allyears_extent_sqkm.csv', skiprows=1)
+
+# # Format date and set indext to date
+# df['yyyyddd'] = pd.to_datetime(df['yyyyddd'], format='%Y%j')
+# df.set_index('yyyyddd', inplace=True)
+# df.columns = ['Total Arctic Sea', 'Beaufort Sea', 'Chukchi Sea', 'East Siberian Sea', 'Laptev Sea', 'Kara Sea',\
+#      'Barents Sea', 'Greenland Sea', 'Bafin Bay Gulf of St. Lawrence', 'Canadian Archipelago', 'Hudson Bay', 'Central Arctic',\
+#          'Bering Sea', 'Baltic Sea', 'Sea of Okhotsk', 'Yellow Sea', 'Cook Inlet']
+
+# # Dropdown year selector values
+# year_options = []
+# for YEAR in df.index.year.unique():
+#     year_options.append({'label':(YEAR), 'value':YEAR})
+
 month_options = [
 {'label':'JAN', 'value':1},
 {'label':'FEB', 'value':2},
@@ -20,6 +35,11 @@ month_options = [
 {'label':'NOV', 'value':11},
 {'label':'DEC', 'value':12}
 ]
+
+# # Dropdown sea selector values
+# sea_options = []
+# for sea in df.columns.unique():
+#     sea_options.append({'label':sea, 'value':sea})
 
 
 def get_ice_header():
@@ -89,8 +109,8 @@ def get_nav_bar():
                 className='twelve columns'
             ),
         ],
-            className = 'row',
-                style = {'background-color' : 'dark-green',
+            className='row',
+                style={'background-color' : 'dark-green',
                         'box-shadow': '2px 5px 5px 1px rgba(0, 100, 0, .5)'}
         ),
     ])
@@ -108,7 +128,7 @@ def ice_App():
 
         dcc.Interval(
             id='ice-interval-component',
-            interval=500*1000, # in milliseconds
+            interval=500000, # in milliseconds
             n_intervals=0
         ),
 
