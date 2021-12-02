@@ -82,7 +82,7 @@ def get_nav_bar():
                         {'label':'Extent Rankings', 'value':'extent-stats'},
                         {'label':'1 Year Moving Avg', 'value':'moving-avg'},
                     ],
-                    # value='temp-graph',
+                    value='years-graph',
                     labelStyle={'display': 'inline'},
                     ),
             ],

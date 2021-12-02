@@ -140,7 +140,7 @@ def snow_App():
         html.Div([
             dcc.Interval(
                 id='snow-interval-component',
-                interval=3000000,
+                interval=300000,
                 n_intervals=0
             ),
         ]),

@@ -2883,7 +2883,7 @@ def update_figure(selected_sea, selected_year, df_fdta):
     print(selected_year)
     traces = []
     df_fdta = pd.read_json(df_fdta)
-    print(df_fdta)
+    # print(df_fdta)
     for x in selected_year:
         sorted_daily_values=df_fdta[df_fdta.index.year == x]
         traces.append(go.Scatter(
@@ -2915,7 +2915,7 @@ def update_figure(selected_sea, selected_year, df_fdta):
     [Input('snow-interval-component', 'n_intervals'),
     Input('river-basin', 'value')])
 def get_snow_data(n, basin):
-    print(basin)
+    print(n)
     
     if basin == 'state_of_colorado':
         url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco3/state_of_colorado.csv',
@@ -2925,7 +2925,7 @@ def get_snow_data(n, basin):
         df = pd.read_csv(url[0])
         
     
-    print(url)
+    # print(url)
     # print(df)
 
     # df = pd.read_csv(url[0])
@@ -3019,7 +3019,7 @@ def get_snow_graph(snow_data, years, basin):
     # df1['pct'] = df1['2022']/df1["Median ('91-'20)"]
     df_pct = df[['2022', 'pct']].copy()
     df_pct = df_pct.drop(df_pct[df_pct.index < '11-01'].index)
-    print(df_pct)
+    # print(df_pct)
     # print(df1)
     df_median = df[["Median ('91-'20)"]]
     
