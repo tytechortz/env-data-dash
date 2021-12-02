@@ -125,6 +125,7 @@ def ice_App():
         get_nav_bar(),
         get_emptyrow(),
         html.Div(id='ice-graph-layout'),
+        html.Div(id='monthly-extent-layout'),
 
         dcc.Interval(
             id='ice-interval-component',
@@ -136,6 +137,7 @@ def ice_App():
         dcc.Store(id='sea-options'),
         dcc.Store(id='fdta'),
         dcc.Store(id='year-options'),
+        dcc.Store(id='df-monthly'),
     ])
 
 app.layout = ice_App

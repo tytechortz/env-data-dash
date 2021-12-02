@@ -2757,6 +2757,48 @@ def co2_graph(co2_data, n):
 # ICE
 #################################################
 
+@app.callback([
+    Output('monthly-bar', 'figure'),
+    Output('df-monthly', 'data')],
+    [Input('month', 'value')])
+def update_figure_c(month_value):
+    df_monthly = pd.read_json('https://www.ncdc.noaa.gov/snow-and-ice/extent/sea-ice/N/' + str(month_value) + '.json')
+    df_monthly = df_monthly.iloc[5:]
+    ice = []
+    for i in range(len(df_monthly['data'])):
+        ice.append(df_monthly['data'][i]['value'])
+    ice = [14.42 if x == -9999 else x for x in ice]
+    ice = list(map(float, ice))
+    
+    # trend line
+    def fit():
+        xi = arange(0,len(ice))
+        slope, intercept, r_value, p_value, std_err = stats.linregress(xi,ice)
+        return (slope*xi+intercept)
+
+    data = [
+        go.Bar(
+            x=df_monthly['data'].index,
+            y=ice
+        ),
+        go.Scatter(
+                x=df_monthly['data'].index,
+                y=fit(),
+                name='trend',
+                line = {'color':'red'}
+            ),
+
+    ]
+    layout = go.Layout(
+        xaxis={'title': 'Year'},
+        yaxis={'title': 'Ice Extent-Million km2', 'range':[(min(ice)-1),(max(ice)+1)]},
+        title='{} Avg Ice Extent'.format(month_options[int(month_value)- 1]['label']),
+        paper_bgcolor="#1f2630",
+        plot_bgcolor="#1f2630",
+        font=dict(color="#2cfec1"),
+    )
+    return {'data': data, 'layout': layout}, df_monthly.to_json()
+
 @app.callback(
     Output('current-stats', 'children'),
     [Input('selected-sea', 'value'),
@@ -2886,6 +2928,28 @@ def stats_n_stuff(product):
         ),
 
 @app.callback(
+    Output('monthly-extent-layout', 'children'),
+    Input('product', 'value'))
+def monthly_extent_layout(product):
+    if product == 'monthly-bar':
+        return html.Div([
+            html.Div([
+                html.Div(id='month-selector'),
+            ],
+                className='row'
+            ),
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='monthly-bar'),
+                ],
+                    className='eight columns'
+                ),
+            ],
+                className='row'
+            ),
+        ])
+
+@app.callback(
     Output('ice-graph-layout', 'children'),
     Input('product', 'value'))
 def ice_graph_layout(product):
@@ -3013,6 +3077,21 @@ def display_year_selector(product_value, year_options):
             ),
         ],
          className='twelve columns'
+        ),
+
+@app.callback(
+    Output('month-selector', 'children'),
+    [Input('product', 'value')])
+def display_month_selector(product_value):
+    if product_value == 'monthly-bar':
+        return html.P('Select Month', style={'text-align': 'center'}) , html.Div([
+            dcc.Dropdown(
+                id='month',
+                options=month_options,
+                value=1     
+            ),
+        ],
+            className='two columns'
         ),
 
 @app.callback(
