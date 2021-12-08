@@ -3203,18 +3203,26 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
     
     df.set_index('date', inplace=True)
     pd.set_option('display.max_rows', None)
-
+    # print(df)
     
-    df = df[years]
-    df['pct'] = df['2022']/df["Median ('91-'20)"]
+    df_selected = df[years]
+    df_selected['pct'] = df_selected['2022']/df_selected["Median ('91-'20)"]
     
-    cur_data = df[df['2022'].notnull()]
+    cur_data = df_selected[df_selected['2022'].notnull()]
+    df_years_data = df.iloc[: , :-9]
+    df_years_data = df_years_data[df_years_data['2022'].notnull()]
   
+    df_cur_all_years = df_years_data.iloc[-1]
+ 
+    sorted_cur_all_years = df_cur_all_years.sort_values()
+   
+    today_rank = sorted_cur_all_years.index.get_loc('2022')+1
+    total_years = len(sorted_cur_all_years)
+   
     today_snow = cur_data.iloc[-1]
   
     yest_snow = cur_data.iloc[-2]
     today = cur_data.index[-1]
-    print(cur_data)
 
     pon = today_snow['2022'] / today_snow["Median ('91-'20)"]
     print(pon)
@@ -3236,6 +3244,7 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
         ),
     ]), html.Div([
         html.H6('Current SWE : {}'.format(today_snow['2022'])),
+        html.H6('Rank(low to high) : {} of {}'.format(today_rank, total_years)),
         html.H6('Normal SWE : {}'.format(today_snow["Median ('91-'20)"])),
         html.H6('Max SWE : {}'.format(today_snow["Max"])),
         html.H6('Min SWE : {}'.format(today_snow["Min"])),
