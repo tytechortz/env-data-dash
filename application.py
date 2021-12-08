@@ -3237,6 +3237,8 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
     ]), html.Div([
         html.H6('Current SWE : {}'.format(today_snow['2022'])),
         html.H6('Normal SWE : {}'.format(today_snow["Median ('91-'20)"])),
+        html.H6('Max SWE : {}'.format(today_snow["Max"])),
+        html.H6('Min SWE : {}'.format(today_snow["Min"])),
     ])
 
 
