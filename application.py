@@ -3190,7 +3190,8 @@ def display_year_selector(snow_data):
     ])
 
 @app.callback(
-    Output('snowpack-stats', 'children'),
+    [Output('snowpack-stats', 'children'),
+    Output('snow-daily-pct-stats', 'children')],
     [Input('snow-data-raw', 'data'),
     Input('selected-years', 'value'),
     Input('river-basin', 'value'),
@@ -3232,6 +3233,8 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
         ],
             className='row'
         ),
+    ]), html.Div([
+        html.H6('Stats')
     ])
 
 

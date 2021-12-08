@@ -134,6 +134,11 @@ def snow_App():
             ],
                 className='eight columns'
             ),
+            html.Div([
+                html.Div(id='snow-daily-pct-stats'),
+            ],
+                className='four columns'
+            ),
         ],
             className='row'
         ),
