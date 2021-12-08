@@ -3214,6 +3214,7 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
   
     yest_snow = cur_data.iloc[-2]
     today = cur_data.index[-1]
+    print(cur_data)
 
     pon = today_snow['2022'] / today_snow["Median ('91-'20)"]
     print(pon)
@@ -3234,7 +3235,8 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
             className='row'
         ),
     ]), html.Div([
-        html.H6('Stats')
+        html.H6('Current SWE : {}'.format(today_snow['2022'])),
+        html.H6('Normal SWE : {}'.format(today_snow["Median ('91-'20)"])),
     ])
 
 
