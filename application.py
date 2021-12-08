@@ -25,9 +25,9 @@ import io
 
 
 today = time.strftime("%Y-%m-%d")
-yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
-cur_mo_day = time.strftime("%m-%d")
-yes_mo_day = yesterday[5:]
+# yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
+# cur_mo_day = time.strftime("%m-%d")
+# yes_mo_day = yesterday[5:]
 # print(yes_mo_day)
 # yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
 two_days_ago = datetime.strftime(datetime.now() - timedelta(2), '%Y-%m-%d')
@@ -53,12 +53,39 @@ app.layout = html.Div([
     dcc.Store(id='combo-annual-change', storage_type='session'),
     dcc.Store(id='combo-water-data', storage_type='session'),
     dcc.Store(id='temps', storage_type='session'),
-    dcc.Store(id='graph-data', storage_type='session')
+    dcc.Store(id='graph-data', storage_type='session'),
+    dcc.Store(id='cur-mo-day', storage_type='session'),
+    dcc.Store(id='yes-mo-day', storage_type='session'),
+    dcc.Store(id='yesterday', storage_type='session'),
+    dcc.Store(id='today', storage_type='session'),
+    dcc.Interval(
+            id='interval-component',
+            interval=500*1000, # in milliseconds
+            n_intervals=0
+        ),
 ])
+
+@app.callback(
+    [Output('cur-mo-day', 'data'),
+    Output('yes-mo-day', 'data'),
+    Output('yesterday', 'data'),
+    Output('today', 'data')],
+    Input('interval-component', 'n_intervals'))
+def get_cur_day(n):
+    yesterday = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
+    cur_mo_day = time.strftime("%m-%d")
+    yes_mo_day = yesterday[5:]
+    today = time.strftime("%Y-%m-%d")
+
+    return cur_mo_day, yes_mo_day, yesterday, today
 
 powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
 
+# https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=2021-12-03&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20
+
 mead_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1999-12-30&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
+
+# https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=2021-12-04&after=1999-12-30&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC
 
 blue_mesa_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=76&before=' + today + '&after=1999-12-30&filename=Blue%20Mesa%20Reservoir%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(2000-01-01%20-%202021-07-14)&order=ASC'
 
@@ -332,7 +359,7 @@ def lake_graphs(powell_data, mead_data, combo_data):
     Input('interval-component','n_intervals')])
 def get_current_volumes(powell_data, mead_data, combo_data, n):
     powell_data = pd.read_json(powell_data)
-    print(powell_data)
+    print(n)
     powell_data.sort_index()
     powell_current_volume = powell_data.iloc[-1,1]
     powell_current_volume_date = powell_data.index[-1]
@@ -1060,7 +1087,6 @@ def drought_graphs(combo_data, drought_data, years):
     dsci_traces = []
     diff_traces = []
 
-    
 
     df_combo = pd.read_json(combo_data)
     # print(df_combo.index.dtypes)
@@ -1069,16 +1095,12 @@ def drought_graphs(combo_data, drought_data, years):
     df_combo_last = df_combo.groupby(df_combo.index.strftime('%Y')).tail(1)
     df_combo_last['diff'] = df_combo_last['Water Level'].diff()
     df_combo_last['diff'] = df_combo_last['diff'].apply(lambda x: x*-1)
-
-    # print(df_combo_last)
-    #adi = annual dsci average
+    df_combo_last['Year'] = df_combo_last.index.year
+    
 
     df_ada = df[['DSCI']]
     df_ada = df_ada.groupby(df_ada.index.strftime('%Y'))['DSCI'].mean()
-    # print(df_ada)
-    # df_combo_last['diff'] = df_combo_last[]
-
-
+  
     drought_traces.append(go.Scatter(
         name='DSCI Moving Average',
         y=selected_df['DSCI'],
@@ -1107,7 +1129,7 @@ def drought_graphs(combo_data, drought_data, years):
     dsci_traces.append(go.Scatter(
         name='Negative Vol.Change',
         y=df_combo_last['diff'],
-        x=df_combo_last.index,
+        x=df_combo_last['Year'],
         mode='markers',
         marker_size=10,
         yaxis='y',
@@ -1119,7 +1141,7 @@ def drought_graphs(combo_data, drought_data, years):
     dsci_traces.append(go.Bar(
         name='DSCI Annual Mean',
         y=df_ada,
-        x=df_combo_last.index,
+        x=df_ada.index,
         yaxis='y2',
         marker_color='blue',
     )),
@@ -3028,13 +3050,6 @@ def get_ice_data(data):
 
     return df.to_json()
 
-# @app.callback(
-#     Output('fdta', 'data'),
-#     [Input('product', 'value')])
-# def clean_fdta(selected_product):
-#     df_fdta = df.rolling(window=5).mean()
-#     if selected_product == 'years-graph' or selected_product == 'extent-stats' or selected_product == 'extent-date' or selected_product == 'moving-avg':
-#         return df_fdta.to_json()
 
 @app.callback(
     Output('sea-options', 'data'),
@@ -3144,12 +3159,6 @@ def get_snow_data(n, basin):
         url = 'https://www.nrcs.usda.gov/Internet/WCIS/AWS_PLOTS/basinCharts/POR/WTEQ/assocHUCco_8/'+ basin +'.csv',
         df = pd.read_csv(url[0])
         
-    
-    # print(url)
-    # print(df)
-
-    # df = pd.read_csv(url[0])
-    # print(df)
     return df.to_json()
 
     
@@ -3184,8 +3193,11 @@ def display_year_selector(snow_data):
     Output('snowpack-stats', 'children'),
     [Input('snow-data-raw', 'data'),
     Input('selected-years', 'value'),
-    Input('river-basin', 'value')])
-def get_snow_stats(snow_data, years, basin):
+    Input('river-basin', 'value'),
+    Input('cur-mo-day', 'data'),
+    Input('yes-mo-day', 'data'),
+    Input('yesterday', 'data')])
+def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
     df = pd.read_json(snow_data)
     
     df.set_index('date', inplace=True)
@@ -3194,9 +3206,13 @@ def get_snow_stats(snow_data, years, basin):
     
     df = df[years]
     df['pct'] = df['2022']/df["Median ('91-'20)"]
-    # print(df)
-    today_snow = df.loc[cur_mo_day]
-    yest_snow = df.loc[yes_mo_day]
+    
+    cur_data = df[df['2022'].notnull()]
+  
+    today_snow = cur_data.iloc[-1]
+  
+    yest_snow = cur_data.iloc[-2]
+    today = cur_data.index[-1]
 
     pon = today_snow['2022'] / today_snow["Median ('91-'20)"]
     print(pon)
