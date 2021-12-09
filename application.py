@@ -3213,7 +3213,7 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
     df_years_data = df_years_data[df_years_data['2022'].notnull()]
   
     df_cur_all_years = df_years_data.iloc[-1]
- 
+    print(df_cur_all_years)
     sorted_cur_all_years = df_cur_all_years.sort_values()
    
     today_rank = sorted_cur_all_years.index.get_loc('2022')+1
@@ -3243,11 +3243,11 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
             className='row'
         ),
     ]), html.Div([
-        html.H6('Current SWE : {}'.format(today_snow['2022'])),
+        html.H6('Current SWE : {:,.1f}'.format(today_snow['2022'])),
         html.H6('Rank(low to high) : {} of {}'.format(today_rank, total_years)),
         html.H6('Normal SWE : {}'.format(today_snow["Median ('91-'20)"])),
         html.H6('Max SWE : {}'.format(today_snow["Max"])),
-        html.H6('Min SWE : {}'.format(today_snow["Min"])),
+        html.H6('Min SWE : {:,.1f}'.format(today_snow["Min"])),
     ])
 
 
