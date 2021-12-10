@@ -367,6 +367,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     powell_last_v = powell_data.iloc[-1,0]
     powell_pct = powell_current_volume / capacities['Lake Powell Glen Canyon Dam and Powerplant']
     powell_tfh_change = powell_current_volume - powell_data['Water Level'][-2]
+    powell_ten = powell_current_volume - powell_data['Water Level'][-12]
     powell_cy = powell_current_volume - powell_data['Water Level'][-days]
     powell_yr = powell_current_volume - powell_data['Water Level'][-366]
     powell_last = powell_data.groupby(powell_data.index.strftime('%Y')).tail(1)
@@ -393,6 +394,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     mead_pct = mead_current_volume / capacities['Lake Mead Hoover Dam and Powerplant']
     mead_last_v = mead_data.iloc[-1,0]
     mead_tfh_change = mead_current_volume - mead_data['Water Level'][-2]
+    mead_ten = mead_current_volume - mead_data['Water Level'][-12]
     mead_cy = mead_current_volume - mead_data['Water Level'][-days]
     mead_yr = mead_current_volume - mead_data['Water Level'][-366]
     mead_last = mead_data.groupby(mead_data.index.strftime('%Y')).tail(1)
@@ -413,6 +415,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     combo_pct = combo_current_volume / capacities['Powell Mead Combo']
     combo_last_v = combo_data['Water Level'][-2]
     combo_tfh_change = combo_current_volume - combo_data['Water Level'][-2]
+    combo_ten = combo_current_volume - combo_data['Water Level'][-12]
     combo_cy = combo_current_volume - combo_data['Water Level'][-days]
     combo_yr = combo_current_volume - combo_data['Water Level'][-366]
    
@@ -448,6 +451,11 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             ),
             html.Div([
                 html.H6('{:,.0f}'.format(powell_tfh_change), style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('{:,.0f}'.format(powell_ten), style={'text-align': 'center'})
             ],
                 className='one column'
             ),
@@ -502,6 +510,11 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
                 className='one column'
             ),
             html.Div([
+                html.H6('{:,.0f}'.format(mead_ten), style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
                 html.H6('{:,.0f}'.format(mead_cy), style={'text-align': 'center'})
             ],
                 className='one column'
@@ -548,6 +561,11 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
             ),
             html.Div([
                 html.H6('{:,.0f}'.format(combo_tfh_change), style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
+                html.H6('{:,.0f}'.format(combo_ten), style={'text-align': 'center'})
             ],
                 className='one column'
             ),
@@ -3245,8 +3263,8 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
     ]), html.Div([
         html.H6('Current SWE : {:,.1f}'.format(today_snow['2022'])),
         html.H6('Rank(low to high) : {} of {}'.format(today_rank, total_years)),
-        html.H6('Normal SWE : {}'.format(today_snow["Median ('91-'20)"])),
-        html.H6('Max SWE : {}'.format(today_snow["Max"])),
+        html.H6('Normal SWE : {:,.1f}'.format(today_snow["Median ('91-'20)"])),
+        html.H6('Max SWE : {:,.1f}'.format(today_snow["Max"])),
         html.H6('Min SWE : {:,.1f}'.format(today_snow["Min"])),
     ])
 

@@ -160,6 +160,11 @@ def river_App():
                 className='one column'
             ),
             html.Div([
+                html.H6('10 Day', style={'text-align': 'center'})
+            ],
+                className='one column'
+            ),
+            html.Div([
                 html.H6('C.Y.', style={'text-align': 'center'})
             ],
                 className='one column'
