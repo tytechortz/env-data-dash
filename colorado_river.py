@@ -241,7 +241,7 @@ def river_App():
         interval=500*1000, # in milliseconds
         n_intervals=0
         ),
-        dcc.Store(id='powell-water-data'),
+        # dcc.Store(id='powell-water-data'),
         dcc.Store(id='powell-water-data-raw'),
         dcc.Store(id='mead-water-data'),
         dcc.Store(id='mead-water-data-raw'),

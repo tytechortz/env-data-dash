@@ -109,6 +109,15 @@ def lake_powell_App():
         ],
             className='row'
         ),
+        html.Div([
+            html.Div([
+                dcc.Graph(id='powell-graph')
+            ],
+                className='eight columns'
+            ),
+        ],
+            className='row'
+        ),
     ])
 
 app.layout = lake_powell_App
