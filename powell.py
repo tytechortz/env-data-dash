@@ -101,7 +101,7 @@ def get_nav_bar():
 
 def lake_powell_App():
     return html.Div([
-        get_river_header(),
+        get_powell_header(),
         get_nav_bar(),
         get_emptyrow(),
         html.Div([
@@ -110,3 +110,5 @@ def lake_powell_App():
             className='row'
         ),
     ])
+
+app.layout = lake_powell_App
