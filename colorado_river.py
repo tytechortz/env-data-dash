@@ -223,6 +223,19 @@ def river_App():
         ],
             className='row'
         ),
+        html.Div([
+            html.Div([
+                dcc.Link(
+                    html.H6(children='Lake Powell'),
+                    href='/powell'
+                )
+            ],
+                className='four columns',
+                style={'text-align': 'center'}
+            ),
+        ],
+            className='row'
+        ),
         dcc.Interval(
         id='interval-component',
         interval=500*1000, # in milliseconds

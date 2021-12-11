@@ -361,13 +361,15 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     powell_data = pd.read_json(powell_data)
     print(n)
     powell_data.sort_index()
+
+    # print(powell_data['Water Level'].tail(20))
     powell_current_volume = powell_data.iloc[-1,1]
     powell_current_volume_date = powell_data.index[-1]
     cvd = str(powell_current_volume_date)
     powell_last_v = powell_data.iloc[-1,0]
     powell_pct = powell_current_volume / capacities['Lake Powell Glen Canyon Dam and Powerplant']
     powell_tfh_change = powell_current_volume - powell_data['Water Level'][-2]
-    powell_ten = powell_current_volume - powell_data['Water Level'][-12]
+    powell_ten = powell_current_volume - powell_data['Water Level'][-11]
     powell_cy = powell_current_volume - powell_data['Water Level'][-days]
     powell_yr = powell_current_volume - powell_data['Water Level'][-366]
     powell_last = powell_data.groupby(powell_data.index.strftime('%Y')).tail(1)
@@ -388,13 +390,13 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     mead_data = pd.read_json(mead_data)
     
     mead_data.sort_index()
-    # print(mead_data)
+    # print(mead_data['Water Level'].tail(20))
     mead_current_volume = mead_data.iloc[-0,-0]
     mead_current_volume = mead_data['Water Level'].iloc[-1]
     mead_pct = mead_current_volume / capacities['Lake Mead Hoover Dam and Powerplant']
     mead_last_v = mead_data.iloc[-1,0]
     mead_tfh_change = mead_current_volume - mead_data['Water Level'][-2]
-    mead_ten = mead_current_volume - mead_data['Water Level'][-12]
+    mead_ten = mead_current_volume - mead_data['Water Level'][-11]
     mead_cy = mead_current_volume - mead_data['Water Level'][-days]
     mead_yr = mead_current_volume - mead_data['Water Level'][-366]
     mead_last = mead_data.groupby(mead_data.index.strftime('%Y')).tail(1)
@@ -415,7 +417,7 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     combo_pct = combo_current_volume / capacities['Powell Mead Combo']
     combo_last_v = combo_data['Water Level'][-2]
     combo_tfh_change = combo_current_volume - combo_data['Water Level'][-2]
-    combo_ten = combo_current_volume - combo_data['Water Level'][-12]
+    combo_ten = combo_current_volume - combo_data['Water Level'][-11]
     combo_cy = combo_current_volume - combo_data['Water Level'][-days]
     combo_yr = combo_current_volume - combo_data['Water Level'][-366]
    
