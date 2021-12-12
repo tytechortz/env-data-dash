@@ -105,19 +105,15 @@ def lake_powell_App():
         get_nav_bar(),
         get_emptyrow(),
         html.Div([
-            html.H3('Lake Powell', style={'text-align': 'center'})
-        ],
-            className='row'
-        ),
-        html.Div([
             html.Div([
                 dcc.Graph(id='powell-graph')
             ],
-                className='eight columns'
+                className='twelve columns'
             ),
         ],
             className='row'
         ),
+        html.Div(id='powell-stats')
     ])
 
 app.layout = lake_powell_App

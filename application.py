@@ -269,12 +269,21 @@ def clean_powell_data(n, powell_data_raw, mead_data_raw):
     return powell_df.to_json(), mead_df.to_json(), combo_df.to_json()
 
 @app.callback(
+    Output('powell-stats', 'children'),
+    [Input('powell-water-data', 'data')])
+def get_powell_stats(powell_data):
+    powell_df = pd.read_json(powell_data)
+
+    return html.Div([
+        html.H4('Hey Hey')
+    ])
+
+@app.callback(
     Output('powell-graph', 'figure'),
     [Input('powell-water-data', 'data')])
 def powell_graph(powell_data):
     powell_df = pd.read_json(powell_data)
-    # print('fuck')
-    # print(powell_data)
+   
     powell_traces = []
 
     powell_traces.append(go.Scatter(
@@ -302,7 +311,7 @@ def powell_graph(powell_data):
     )),
 
     powell_layout = go.Layout(
-        height =400,
+        height =600,
         title = 'Lake Powell',
         yaxis = {'title':'Volume (AF)'},
         paper_bgcolor="#1f2630",
