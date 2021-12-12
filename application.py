@@ -273,9 +273,28 @@ def clean_powell_data(n, powell_data_raw, mead_data_raw):
     [Input('powell-water-data', 'data')])
 def get_powell_stats(powell_data):
     powell_df = pd.read_json(powell_data)
+    powell_current_volume = powell_df.iloc[-1,1]
+
 
     return html.Div([
-        html.H4('Hey Hey')
+        html.Div([
+            html.Div([
+                html.H6('Capacity(AF) : 24,322,000', style={'text-align': 'right'})
+            ],
+                className='three columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
+            html.Div([
+                html.H6('Current Volume(AF) : {:,.0f}'.format(powell_current_volume), style={'text-align': 'right'})
+            ],
+                className='three columns'
+            ),
+        ],
+            className='row'
+        ),
     ])
 
 @app.callback(
