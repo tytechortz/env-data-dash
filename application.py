@@ -84,7 +84,7 @@ def get_cur_day(n):
 
 powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
 
-# https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=2021-12-03&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20
+# https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=2021-12-14&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20
 
 mead_data_url = 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=6124&before=' + today + '&after=1999-12-30&filename=Lake%20Mead%20Hoover%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(1937-05-28%20-%202020-11-30)&order=ASC'
 
@@ -299,33 +299,43 @@ def get_powell_stats(powell_data):
 
 @app.callback(
     Output('powell-graph', 'figure'),
-    [Input('powell-water-data', 'data')])
-def powell_graph(powell_data):
-    powell_df = pd.read_json(powell_data)
+    [Input('powell-water-data', 'data'),
+    Input('combo-annual-change', 'data'),
+    Input('powell-year', 'value')])
+def powell_graph(powell_data, powell_combo, years):
+    df = pd.read_json(powell_data)
+    powell_combo = pd.read_json(powell_combo)
+
+    year1 = years[0]
+    year2 = years[1]
+
+    sel_df = df.loc[(df.index.year >= year1) & (df.index.year <= year2)]
+    print(powell_combo)
+
    
     powell_traces = []
 
     powell_traces.append(go.Scatter(
-        y = powell_df['Water Level'],
-        x = powell_df.index,
+        y = sel_df['Water Level'],
+        x = sel_df.index,
         name='Water Level'
     )),
 
     powell_traces.append(go.Scatter(
-        y = powell_df['power level'],
-        x = powell_df.index,
+        y = sel_df['power level'],
+        x = sel_df.index,
         name = 'Power level'
     )),
 
     powell_traces.append(go.Scatter(
-        y = powell_df['sick pool'],
-        x = powell_df.index,
+        y = sel_df['sick pool'],
+        x = sel_df.index,
         name = 'Sick Pool'
     )),
 
     powell_traces.append(go.Scatter(
-        y = powell_df['dead pool'],
-        x = powell_df.index,
+        y = sel_df['dead pool'],
+        x = sel_df.index,
         name = 'Dead Pool'
     )),
 
@@ -3311,7 +3321,7 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
     df_years_data = df_years_data[df_years_data['2022'].notnull()]
   
     df_cur_all_years = df_years_data.iloc[-1]
-    print(df_cur_all_years)
+    # print(df_cur_all_years)
     sorted_cur_all_years = df_cur_all_years.sort_values()
    
     today_rank = sorted_cur_all_years.index.get_loc('2022')+1
@@ -3323,10 +3333,10 @@ def get_snow_stats(snow_data, years, basin, cur_mo_day, yes_mo_day, yesterday):
     today = cur_data.index[-1]
 
     pon = today_snow['2022'] / today_snow["Median ('91-'20)"]
-    print(pon)
+    # print(pon)
     ypon = yest_snow['2022'] / yest_snow["Median ('91-'20)"]
     day_change = pon - ypon
-    print(day_change)
+    # print(day_change)
     lypon = today_snow['2021'] / today_snow["Median ('91-'20)"]
     year_change = pon - lypon
 
