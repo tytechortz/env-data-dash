@@ -104,7 +104,7 @@ def co2_App():
                             {'label': 'NOV', 'value': 11},
                             {'label': 'DEC', 'value': 12},
                         ],
-                        value = 12,
+                        value = 1,
                     )
                 ],
                     className='two columns'

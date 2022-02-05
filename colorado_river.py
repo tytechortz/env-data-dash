@@ -121,23 +121,52 @@ def river_App():
                 type="default",
                 children=html.Div(dcc.Graph(id='powell-levels'))),
             ],
-                className='four columns'
+                className='six columns'
             ),
+            html.Div([
+                dcc.Graph(
+                    id='powell-annual-changes'
+                )
+            ],
+                className='six columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
             html.Div([
                 dcc.Loading(
                 id="loading-mead",
                 type="default",
                 children=html.Div(dcc.Graph(id='mead-levels'))),
             ],
-                className='four columns'
+                className='six columns'
             ),
+            html.Div([
+                dcc.Graph(
+                    id='mead-annual-changes'
+                )
+            ],
+                className='six columns'
+            ),
+        ],
+            className='row'
+        ),
+        html.Div([
             html.Div([
                 dcc.Loading(
                 id="loading-combo",
                 type="default",
                 children=html.Div(dcc.Graph(id='combo-levels'))),
             ],
-                className='four columns'
+                className='six columns'
+            ),
+            html.Div([
+                dcc.Graph(
+                    id='combo-annual-changes'
+                )
+            ],
+                className='six columns'
             ),
         ],
             className='row'
@@ -197,32 +226,32 @@ def river_App():
         ],
             className='row'
         ),
-        html.Div([
-            html.Div([
-                dcc.Graph(
-                    id='powell-annual-changes'
-                )
-            ],
-                className='four columns'
-            ),
-            html.Div([
-                dcc.Graph(
-                    id='mead-annual-changes'
-                )
-            ],
-                className='four columns'
-            ),
-            html.Div([
-                dcc.Graph(
-                    id='combo-annual-changes'
-                )
-            ],
-                className='four columns'
-            ),
+        # html.Div([
+            # html.Div([
+            #     dcc.Graph(
+            #         id='powell-annual-changes'
+            #     )
+            # ],
+            #     className='four columns'
+            # ),
+            # html.Div([
+            #     dcc.Graph(
+            #         id='mead-annual-changes'
+            #     )
+            # ],
+            #     className='four columns'
+            # ),
+            # html.Div([
+            #     dcc.Graph(
+            #         id='combo-annual-changes'
+            #     )
+            # ],
+            #     className='four columns'
+            # ),
             
-        ],
-            className='row'
-        ),
+        # ],
+        #     className='row'
+        # ),
         html.Div([
             html.Div([
                 dcc.Link(

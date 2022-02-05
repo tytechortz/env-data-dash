@@ -82,7 +82,7 @@ def get_cur_day(n):
 
     return cur_mo_day, yes_mo_day, yesterday, today
 
-powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20'
+powell_data_url= 'https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=' + today + '&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20(2021-12-01%20-%202021-12-12)&order=ASC'
 
 # https://data.usbr.gov/rise/api/result/download?type=csv&itemId=509&before=2021-12-14&after=1999-12-30&filename=Lake%20Powell%20Glen%20Canyon%20Dam%20and%20Powerplant%20Daily%20Lake%2FReservoir%20Storage-af%20Time%20Series%20Data%20
 
@@ -705,8 +705,10 @@ def get_current_volumes(powell_data, mead_data, combo_data, n):
     Input('combo-annual-change', 'data'),])
 def change_graphs(powell_data, mead_data, combo_data):
     df_powell = pd.read_json(powell_data)
-    # print(df_powell)
+    df_powell.index = df_powell.index.year
+    print(df_powell)
     df_mead = pd.read_json(mead_data)
+    df_mead = df_mead[1:]
     df_combo = pd.read_json(combo_data)
     pd.set_option('display.max_columns', None)
     # print(df_powell)
@@ -724,6 +726,7 @@ def change_graphs(powell_data, mead_data, combo_data):
     powell_traces.append(go.Bar(
         y = df_powell['diff'],
         x = df_powell.index,
+        # width = 3600000,
         marker_color = df_powell['color']
     )),
 
@@ -2590,7 +2593,7 @@ def co2_graph(n):
 
     old_data.index = pd.to_datetime(old_data[['year', 'month', 'day']])
     old_data = old_data.drop(['year', 'month', 'day', 'time_decimal'], axis=1)
-    # print(old_data)
+    print(old_data)
 
     new_data = pd.read_csv('https://www.esrl.noaa.gov/gmd/webdata/ccgg/trends/co2_mlo_weekly.csv')
     new_data['Date'] = pd.to_datetime(new_data['Date'])
@@ -2796,22 +2799,22 @@ def co2_month_graph(data, month):
     # print(n)
     df = pd.read_json(data)
     # df = df.groupby(df.index.year).mean()
-    df_21 = df[(df.index.month == month) & (df.index.year == 2021)]
+    df_22 = df[(df.index.month == month) & (df.index.year == 2022)]
     # print(df_21)
-    df_20 = df[(df.index.month == month) & (df.index.year == 2020)]
+    df_21 = df[(df.index.month == month) & (df.index.year == 2021)]
 
     data = [
         go.Scatter(
-            y = df_21['value'],
-            x = df_20.index,
-            name = '2021',
+            y = df_22['value'],
+            x = df_21.index,
+            name = '2022',
             mode = 'markers',
             marker=dict(color='red'),
         ),
         go.Scatter(
-            y = df_20['value'],
-            x = df_20.index,
-            name = '2020',
+            y = df_21['value'],
+            x = df_21.index,
+            name = '2021',
             mode = 'markers',
             marker=dict(color='blue'),
         )
@@ -3378,8 +3381,11 @@ def get_snow_graph(snow_data, years, basin):
     # print(df1)
     # df1['pct'] = df1['2022']/df1["Median ('91-'20)"]
     df_pct = df[['2022', 'pct']].copy()
-    df_pct = df_pct.drop(df_pct[df_pct.index < '11-01'].index)
-    # print(df_pct)
+    # df_pct = df_pct.drop(df_pct[df_pct.index < '11-01'].index)
+    # df_pct = df_pct.drop(df_pct[df_pct.index < '10-01'].index)
+    # print(df)
+    df_pct = df.iloc[30: , :]
+    print(df_pct)
     # print(df1)
     df_median = df[["Median ('91-'20)"]]
     
@@ -3455,7 +3461,7 @@ def get_snow_graph(snow_data, years, basin):
             type = 'category',
             title = 'Date',
             tickformat = '%m-%d',
-            tickvals = ['10-01', '11-01', '12-01', '01-01', '02-01', '03-01', '04-30', '05-01', '06-01'],
+            tickvals = ['10-01', '11-01', '12-01', '01-01', '02-01', '03-01', '04-01', '05-01', '06-01'],
             showgrid = True,
             gridcolor = '#bdbdbd',
             gridwidth = .5,
