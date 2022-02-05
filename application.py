@@ -710,6 +710,7 @@ def change_graphs(powell_data, mead_data, combo_data):
     df_mead = pd.read_json(mead_data)
     df_mead.index = df_mead.index.year
     df_combo = pd.read_json(combo_data)
+    df_combo.index = df_combo.index.year
     pd.set_option('display.max_columns', None)
     # print(df_powell)
     # print(df_mead)
