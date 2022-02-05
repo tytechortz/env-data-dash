@@ -415,7 +415,7 @@ def lake_graphs(powell_data, mead_data, combo_data):
     )
 
     mead_layout = go.Layout(
-        height = 400,
+        height = 500,
         title = 'Lake Mead',
         yaxis = {'title':'Volume (AF)'},
         paper_bgcolor="#1f2630",
@@ -424,7 +424,7 @@ def lake_graphs(powell_data, mead_data, combo_data):
     )
 
     combo_layout = go.Layout(
-        height =400,
+        height =500,
         title = 'Powell and Mead Total Storage',
         yaxis = {'title':'Volume (AF)'},
         paper_bgcolor="#1f2630",
