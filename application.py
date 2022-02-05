@@ -752,7 +752,7 @@ def change_graphs(powell_data, mead_data, combo_data):
     )
 
     mead_layout = go.Layout(
-        height =400,
+        height =500,
         title = 'Lake Mead',
         yaxis = {'title':'Volume (AF)'},
         paper_bgcolor="#1f2630",
@@ -761,7 +761,7 @@ def change_graphs(powell_data, mead_data, combo_data):
     )
 
     combo_layout = go.Layout(
-        height =400,
+        height =500,
         title = 'Powell + Mead',
         yaxis = {'title':'Volume (AF)'},
         paper_bgcolor="#1f2630",
