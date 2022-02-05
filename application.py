@@ -406,7 +406,7 @@ def lake_graphs(powell_data, mead_data, combo_data):
     ))
 
     powell_layout = go.Layout(
-        height =400,
+        height =500,
         title = 'Lake Powell',
         yaxis = {'title':'Volume (AF)'},
         paper_bgcolor="#1f2630",
@@ -708,7 +708,7 @@ def change_graphs(powell_data, mead_data, combo_data):
     df_powell.index = df_powell.index.year
     print(df_powell)
     df_mead = pd.read_json(mead_data)
-    df_mead = df_mead[1:]
+    df_mead.index = df_mead.index.year
     df_combo = pd.read_json(combo_data)
     pd.set_option('display.max_columns', None)
     # print(df_powell)
@@ -743,7 +743,7 @@ def change_graphs(powell_data, mead_data, combo_data):
     )),
 
     powell_layout = go.Layout(
-        height =400,
+        height =500,
         title = 'Lake Powell',
         yaxis = {'title':'Volume (AF)'},
         paper_bgcolor="#1f2630",
