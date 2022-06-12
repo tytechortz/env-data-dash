@@ -44,7 +44,7 @@ app = dash.Dash(name=__name__,
                 assets_folder="static",
                 assets_url_path="static")
 
-application = app.server
+server = app.server
 
 app.config.suppress_callback_exceptions = True
 
