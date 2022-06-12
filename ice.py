@@ -6,6 +6,7 @@ from colorado_river import get_river_header, get_emptyrow
 app = dash.Dash(__name__)
 app.config['suppress_callback_exceptions']=True
 
+
 # Read data
 # df = pd.read_csv('ftp://sidads.colorado.edu/DATASETS/NOAA/G02186/masie_4km_allyears_extent_sqkm.csv', skiprows=1)
 
